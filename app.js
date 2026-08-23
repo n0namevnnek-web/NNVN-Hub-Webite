@@ -27,15 +27,13 @@ const translations = {
     uploadModalCopy: "Host your script and manage it inside NNVN Hub.",
     confirmDelete: "Bạn có chắc muốn xóa script này không?",
     protectedLinkCopied: "Đã copy link protected.",
-    authOpen: "Đăng nhập / Đăng kí",
-    authTitle: "Đăng nhập / Đăng kí",
-    emailLogin: "Tiếp tục bằng Email",
-    authNote: "Đăng nhập thật dùng Supabase OAuth. Hãy điền Supabase URL/anon key và bật Google/Discord provider trong Supabase.",
-    authConfigMissing: "Chưa cấu hình Supabase Auth. Mở BACKEND-SETUP.md để làm bước Google/Discord OAuth.",
-    authRedirecting: "Đang chuyển tới trang đăng nhập...",
-    authEmailSent: "Đã gửi link đăng nhập tới email nếu Supabase đã bật Email OTP.",
+    authOpen: "Đăng nhập Discord",
+    authTitle: "Đăng nhập Discord",
+    discordLogin: "Tiếp tục bằng Discord",
+    authNote: "Discord sẽ trả về tên và avatar để hiển thị ở menu trái sau khi Supabase Auth được cấu hình.",
+    authConfigMissing: "Chưa cấu hình Supabase Auth. Bạn cần tạo Supabase project, bật Discord provider, rồi điền URL/anon key vào backend-config.js.",
+    authRedirecting: "Đang chuyển tới Discord...",
     authError: "Đăng nhập chưa thành công. Kiểm tra cấu hình Supabase OAuth.",
-    authEmailRequired: "Nhập email trước nhé.",
     searchLabel: "Tìm kiếm",
     searchPlaceholder: "Tìm script...",
     timeLabel: "Phạm vi",
@@ -125,15 +123,13 @@ const translations = {
     uploadModalCopy: "Host your script and manage it inside NNVN Hub.",
     confirmDelete: "Are you sure you want to delete this script?",
     protectedLinkCopied: "Protected link copied.",
-    authOpen: "Sign in / Sign up",
-    authTitle: "Sign in / Sign up",
-    emailLogin: "Continue with Email",
-    authNote: "Real login uses Supabase OAuth. Fill the Supabase URL/anon key and enable Google/Discord providers in Supabase.",
-    authConfigMissing: "Supabase Auth is not configured yet. Open BACKEND-SETUP.md for Google/Discord OAuth setup.",
-    authRedirecting: "Redirecting to sign in...",
-    authEmailSent: "Login link sent if Email OTP is enabled in Supabase.",
+    authOpen: "Discord Login",
+    authTitle: "Discord Login",
+    discordLogin: "Continue with Discord",
+    authNote: "Discord returns the account name and avatar for the left menu after Supabase Auth is configured.",
+    authConfigMissing: "Supabase Auth is not configured yet. Create a Supabase project, enable Discord provider, then fill backend-config.js.",
+    authRedirecting: "Redirecting to Discord...",
     authError: "Sign in failed. Check your Supabase OAuth settings.",
-    authEmailRequired: "Enter an email first.",
     searchLabel: "Search",
     searchPlaceholder: "Search scripts...",
     timeLabel: "Range",
@@ -459,8 +455,6 @@ const uploadPanel = document.getElementById("uploadPanel");
 const uploadModalTitle = document.getElementById("uploadModalTitle");
 const authModal = document.getElementById("authModal");
 const openAuthButton = document.getElementById("openAuthButton");
-const authEmail = document.getElementById("authEmail");
-const emailLoginButton = document.getElementById("emailLoginButton");
 const authStatus = document.getElementById("authStatus");
 const languageButtons = [...document.querySelectorAll("[data-lang]")];
 const modeButtons = [...document.querySelectorAll("[data-mode]")];
@@ -561,9 +555,8 @@ function bindEvents() {
   });
 
   openAuthButton?.addEventListener("click", () => authModal?.showModal());
-  emailLoginButton?.addEventListener("click", () => signInWithEmail(authEmail?.value || ""));
   oauthButtons.forEach((button) => {
-    button.addEventListener("click", () => signInWithProvider(button.dataset.oauthProvider || "google"));
+    button.addEventListener("click", () => signInWithProvider(button.dataset.oauthProvider || "discord"));
   });
 
   scriptFile?.addEventListener("change", async (event) => {
@@ -778,7 +771,7 @@ function switchPremiumPanel(section) {
   });
 }
 
-async function signInWithProvider(provider) {
+async function signInWithProvider() {
   const auth = getSupabaseAuthClient();
   if (!auth) {
     setAuthStatus(t("authConfigMissing"));
@@ -786,30 +779,12 @@ async function signInWithProvider(provider) {
   }
   setAuthStatus(t("authRedirecting"));
   const { error } = await auth.signInWithOAuth({
-    provider,
+    provider: "discord",
     options: { redirectTo: window.location.origin + window.location.pathname }
   });
   if (error) {
     setAuthStatus(t("authError"));
   }
-}
-
-async function signInWithEmail(email) {
-  const cleanEmail = email.trim();
-  if (!cleanEmail) {
-    setAuthStatus(t("authEmailRequired"));
-    return;
-  }
-  const auth = getSupabaseAuthClient();
-  if (!auth) {
-    setAuthStatus(t("authConfigMissing"));
-    return;
-  }
-  const { error } = await auth.signInWithOtp({
-    email: cleanEmail,
-    options: { emailRedirectTo: window.location.origin + window.location.pathname }
-  });
-  setAuthStatus(error ? t("authError") : t("authEmailSent"));
 }
 
 let supabaseClient = null;
@@ -831,7 +806,9 @@ async function hydrateAuthUser() {
   const user = data?.user;
   if (!user) return;
   const profile = user.user_metadata || {};
-  setSidebarUser(profile.full_name || profile.name || user.email || "NNVN user", profile.avatar_url || "");
+  const displayName = profile.full_name || profile.name || profile.user_name || profile.preferred_username || user.email || "Discord user";
+  const avatarUrl = profile.avatar_url || profile.picture || profile.avatar || "";
+  setSidebarUser(displayName, avatarUrl);
 }
 
 function clearLegacyDemoLogin() {

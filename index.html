@@ -58,7 +58,7 @@
         </div>
         <div class="topbar-actions">
           <span class="backend-status" id="backendStatus" data-i18n="backendDemo">View demo</span>
-          <button class="button button-secondary auth-open" type="button" id="openAuthButton" data-i18n="authOpen">Đăng nhập / Đăng kí</button>
+          <button class="button button-secondary auth-open" type="button" id="openAuthButton" data-i18n="authOpen">Đăng nhập Discord</button>
           <div class="lang-switch" aria-label="Language switch">
             <button class="lang-btn active" data-lang="vi" type="button">VI</button>
             <button class="lang-btn" data-lang="en" type="button">EN</button>
@@ -317,23 +317,13 @@
   <dialog class="auth-modal" id="authModal">
     <form class="glass auth-card" method="dialog">
       <button class="modal-x" value="cancel" aria-label="Close">×</button>
-      <h3 data-i18n="authTitle">Đăng nhập / Đăng kí</h3>
-      <label class="editor-label">
-        <span>Email</span>
-        <input id="authEmail" type="email" placeholder="you@example.com">
-      </label>
-      <button class="button button-primary" type="button" id="emailLoginButton" data-i18n="emailLogin">Tiếp tục bằng Email</button>
-      <div class="auth-divider">or</div>
-      <button class="button button-secondary oauth-button" type="button" data-oauth-provider="google">
-        <img src="assets/images/google-icon.png" alt="" aria-hidden="true">
-        <span>Google</span>
-      </button>
-      <button class="button button-secondary oauth-button" type="button" data-oauth-provider="discord">
+      <h3 data-i18n="authTitle">Đăng nhập Discord</h3>
+      <button class="button button-primary oauth-button discord-login-button" type="button" data-oauth-provider="discord">
         <img src="assets/images/discord-icon.png" alt="" aria-hidden="true">
-        <span>Discord</span>
+        <span data-i18n="discordLogin">Tiếp tục bằng Discord</span>
       </button>
       <p class="auth-status" id="authStatus" aria-live="polite"></p>
-      <p class="section-copy auth-note" data-i18n="authNote">Khi nối Supabase Auth, Discord sẽ trả về tên và avatar để hiển thị ở menu trái.</p>
+      <p class="section-copy auth-note" data-i18n="authNote">Discord sẽ trả về tên và avatar để hiển thị ở menu trái sau khi Supabase Auth được cấu hình.</p>
     </form>
   </dialog>
 
