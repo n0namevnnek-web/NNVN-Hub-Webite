@@ -497,6 +497,7 @@ async function init() {
   setLanguage(state.lang, false);
   bindEvents();
   clearLegacyDemoLogin();
+  hydrateCachedAuthProfile();
   await hydrateAuthUser();
   bindAuthMemory();
   renderFilters();
@@ -875,17 +876,19 @@ function bindAuthMemory() {
 function applyAuthUser(user) {
   state.authUser = user;
   if (!user) {
-    setSidebarUser("Guest", "assets/images/guest-avatar.png");
-    if (openAuthButton) openAuthButton.textContent = t("authOpen");
-    signOutButton?.classList.add("hidden");
+    const cachedProfile = getCachedAuthProfile();
+    if (cachedProfile) {
+      applyAccountDisplay(cachedProfile.name, cachedProfile.avatarUrl, true);
+    } else {
+      applyGuestDisplay();
+    }
     return;
   }
   const profile = user.user_metadata || {};
   const displayName = profile.full_name || profile.name || profile.user_name || profile.preferred_username || user.email || "Discord user";
   const avatarUrl = profile.avatar_url || profile.picture || profile.avatar || "";
-  setSidebarUser(displayName, avatarUrl);
-  if (openAuthButton) openAuthButton.textContent = t("signOut");
-  signOutButton?.classList.remove("hidden");
+  cacheAuthProfile(displayName, avatarUrl);
+  applyAccountDisplay(displayName, avatarUrl, true);
   setAuthStatus(t("authSignedIn"));
 }
 
@@ -894,10 +897,46 @@ async function signOut() {
   if (auth) {
     await auth.signOut();
   }
+  localStorage.removeItem("nnvn-auth-profile");
   state.protectedEntries = [];
-  applyAuthUser(null);
+  applyGuestDisplay();
   setAuthStatus(t("authSignedOut"));
   renderProtectTable();
+}
+
+function hydrateCachedAuthProfile() {
+  const cachedProfile = getCachedAuthProfile();
+  if (cachedProfile) {
+    applyAccountDisplay(cachedProfile.name, cachedProfile.avatarUrl, true);
+  } else {
+    applyGuestDisplay();
+  }
+}
+
+function getCachedAuthProfile() {
+  try {
+    const rawProfile = localStorage.getItem("nnvn-auth-profile");
+    return rawProfile ? JSON.parse(rawProfile) : null;
+  } catch {
+    localStorage.removeItem("nnvn-auth-profile");
+    return null;
+  }
+}
+
+function cacheAuthProfile(name, avatarUrl) {
+  localStorage.setItem("nnvn-auth-profile", JSON.stringify({ name, avatarUrl }));
+}
+
+function applyGuestDisplay() {
+  setSidebarUser("Guest", "assets/images/guest-avatar.png");
+  if (openAuthButton) openAuthButton.textContent = t("authOpen");
+  signOutButton?.classList.add("hidden");
+}
+
+function applyAccountDisplay(name, avatarUrl, signedIn) {
+  setSidebarUser(name, avatarUrl || "assets/images/guest-avatar.png");
+  if (openAuthButton) openAuthButton.textContent = signedIn ? t("signOut") : t("authOpen");
+  signOutButton?.classList.toggle("hidden", !signedIn);
 }
 
 function cleanupAuthCallbackUrl() {
