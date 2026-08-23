@@ -16,6 +16,7 @@
       --muted: rgba(248, 251, 255, 0.72);
       --accent: #ffe2ae;
       --green: #28df7a;
+      --red: #ff4d5d;
     }
 
     * {
@@ -77,6 +78,11 @@
       font-weight: 700;
     }
 
+    .icon.error {
+      color: #fff;
+      background: linear-gradient(135deg, var(--red), #ff9aa4);
+    }
+
     h1 {
       margin: 0 0 0.65rem;
       font-size: clamp(1.8rem, 4vw, 2.6rem);
@@ -107,7 +113,7 @@
   </video>
   <div class="shade"></div>
   <main class="card">
-    <div class="icon">✓</div>
+    <div class="icon" id="stateIcon">✓</div>
     <h1 id="title">Đăng nhập hoàn tất</h1>
     <p id="copy">Nó sẽ tự chuyển bạn về trang chủ.</p>
     <a class="link" id="homeLink" href="index.html">Về trang chủ</a>
@@ -159,7 +165,7 @@
             persistSession: true,
             autoRefreshToken: true,
             detectSessionInUrl: true,
-            flowType: "pkce",
+            flowType: "implicit",
             storageKey: "nnvn-hub-auth"
           }
         });
@@ -170,16 +176,13 @@
           throw new Error(errorDescription);
         }
 
-        const code = params.get("code");
-        if (code) {
-          const { error } = await client.auth.exchangeCodeForSession(code);
-          if (error) throw error;
-        } else {
-          const { error } = await client.auth.getSession();
-          if (error) throw error;
-        }
+        await new Promise((resolve) => window.setTimeout(resolve, 350));
 
-        await new Promise((resolve) => window.setTimeout(resolve, 250));
+        const { data: sessionData, error: sessionError } = await client.auth.getSession();
+        if (sessionError) throw sessionError;
+        if (!sessionData?.session) {
+          throw new Error("No session returned after OAuth");
+        }
 
         const { data, error } = await client.auth.getUser();
         if (error) throw error;
@@ -195,6 +198,9 @@
           window.location.replace(homeUrl);
         }, 1200);
       } catch (error) {
+        const stateIcon = document.getElementById("stateIcon");
+        stateIcon.textContent = "×";
+        stateIcon.classList.add("error");
         document.getElementById("title").textContent = text.errorTitle;
         document.getElementById("copy").textContent = `${text.errorCopy} ${error?.message || ""}`.trim();
       }
