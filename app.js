@@ -30,8 +30,11 @@ const translations = {
     authOpen: "Đăng nhập / Đăng kí",
     authTitle: "Đăng nhập / Đăng kí",
     emailLogin: "Tiếp tục bằng Email",
-    authNote: "Khi nối Supabase Auth, Discord sẽ trả về tên và avatar để hiển thị ở menu trái.",
-    authLocalReady: "Đã đăng nhập demo trên thiết bị này.",
+    authNote: "Đăng nhập thật dùng Supabase OAuth. Hãy điền Supabase URL/anon key và bật Google/Discord provider trong Supabase.",
+    authConfigMissing: "Chưa cấu hình Supabase Auth. Mở BACKEND-SETUP.md để làm bước Google/Discord OAuth.",
+    authRedirecting: "Đang chuyển tới trang đăng nhập...",
+    authEmailSent: "Đã gửi link đăng nhập tới email nếu Supabase đã bật Email OTP.",
+    authError: "Đăng nhập chưa thành công. Kiểm tra cấu hình Supabase OAuth.",
     authEmailRequired: "Nhập email trước nhé.",
     searchLabel: "Tìm kiếm",
     searchPlaceholder: "Tìm script...",
@@ -125,8 +128,11 @@ const translations = {
     authOpen: "Sign in / Sign up",
     authTitle: "Sign in / Sign up",
     emailLogin: "Continue with Email",
-    authNote: "After Supabase Auth is connected, Discord can return the user name and avatar for the sidebar.",
-    authLocalReady: "Demo login saved on this device.",
+    authNote: "Real login uses Supabase OAuth. Fill the Supabase URL/anon key and enable Google/Discord providers in Supabase.",
+    authConfigMissing: "Supabase Auth is not configured yet. Open BACKEND-SETUP.md for Google/Discord OAuth setup.",
+    authRedirecting: "Redirecting to sign in...",
+    authEmailSent: "Login link sent if Email OTP is enabled in Supabase.",
+    authError: "Sign in failed. Check your Supabase OAuth settings.",
     authEmailRequired: "Enter an email first.",
     searchLabel: "Search",
     searchPlaceholder: "Search scripts...",
@@ -478,7 +484,6 @@ void init();
 async function init() {
   setLanguage(state.lang, false);
   bindEvents();
-  hydrateLocalAuthUser();
   await hydrateAuthUser();
   renderFilters();
   renderScripts();
@@ -775,18 +780,17 @@ function switchPremiumPanel(section) {
 async function signInWithProvider(provider) {
   const auth = getSupabaseAuthClient();
   if (!auth) {
-    saveLocalAuthUser({
-      name: provider === "discord" ? "Discord user" : "Google user",
-      avatarUrl: provider === "discord" ? "assets/images/discord-icon.png" : "assets/images/google-icon.png"
-    });
-    setAuthStatus(t("authLocalReady"));
-    setTimeout(() => authModal?.close(), 450);
+    setAuthStatus(t("authConfigMissing"));
     return;
   }
-  await auth.signInWithOAuth({
+  setAuthStatus(t("authRedirecting"));
+  const { error } = await auth.signInWithOAuth({
     provider,
-    options: { redirectTo: window.location.href }
+    options: { redirectTo: window.location.origin + window.location.pathname }
   });
+  if (error) {
+    setAuthStatus(t("authError"));
+  }
 }
 
 async function signInWithEmail(email) {
@@ -797,25 +801,26 @@ async function signInWithEmail(email) {
   }
   const auth = getSupabaseAuthClient();
   if (!auth) {
-    saveLocalAuthUser({
-      name: cleanEmail.split("@")[0],
-      avatarUrl: ""
-    });
-    setAuthStatus(t("authLocalReady"));
-    setTimeout(() => authModal?.close(), 450);
+    setAuthStatus(t("authConfigMissing"));
     return;
   }
-  await auth.signInWithOtp({
+  const { error } = await auth.signInWithOtp({
     email: cleanEmail,
-    options: { emailRedirectTo: window.location.href }
+    options: { emailRedirectTo: window.location.origin + window.location.pathname }
   });
+  setAuthStatus(error ? t("authError") : t("authEmailSent"));
 }
+
+let supabaseClient = null;
 
 function getSupabaseAuthClient() {
   if (!window.supabase || !window.NNVN_BACKEND?.supabaseUrl || !window.NNVN_BACKEND?.supabaseAnonKey) {
     return null;
   }
-  return window.supabase.createClient(window.NNVN_BACKEND.supabaseUrl, window.NNVN_BACKEND.supabaseAnonKey).auth;
+  if (!supabaseClient) {
+    supabaseClient = window.supabase.createClient(window.NNVN_BACKEND.supabaseUrl, window.NNVN_BACKEND.supabaseAnonKey);
+  }
+  return supabaseClient.auth;
 }
 
 async function hydrateAuthUser() {
@@ -826,24 +831,6 @@ async function hydrateAuthUser() {
   if (!user) return;
   const profile = user.user_metadata || {};
   setSidebarUser(profile.full_name || profile.name || user.email || "NNVN user", profile.avatar_url || "");
-}
-
-function hydrateLocalAuthUser() {
-  const rawUser = localStorage.getItem("nnvn-local-user");
-  if (!rawUser) return;
-  try {
-    const user = JSON.parse(rawUser);
-    if (user?.name) {
-      setSidebarUser(user.name, user.avatarUrl || "");
-    }
-  } catch {
-    localStorage.removeItem("nnvn-local-user");
-  }
-}
-
-function saveLocalAuthUser(user) {
-  localStorage.setItem("nnvn-local-user", JSON.stringify(user));
-  setSidebarUser(user.name, user.avatarUrl || "");
 }
 
 function setAuthStatus(message) {
