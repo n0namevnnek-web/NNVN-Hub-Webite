@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NNVN Hub Auth Complete</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;650&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #06070b;
+      --panel: rgba(16, 18, 29, 0.88);
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #f8fbff;
+      --muted: rgba(248, 251, 255, 0.72);
+      --accent: #ffe2ae;
+      --green: #28df7a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 2rem;
+      color: var(--text);
+      font-family: "Outfit", sans-serif;
+      background: #05060a;
+      overflow: hidden;
+    }
+
+    video {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.48;
+    }
+
+    .shade {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(circle at center, rgba(40, 223, 122, 0.12), transparent 26%),
+        rgba(5, 7, 13, 0.72);
+    }
+
+    .card {
+      width: min(520px, 100%);
+      padding: 2rem;
+      border-radius: 28px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.46);
+      text-align: center;
+      backdrop-filter: blur(18px);
+    }
+
+    .icon {
+      display: grid;
+      place-items: center;
+      width: 4.3rem;
+      height: 4.3rem;
+      margin: 0 auto 1rem;
+      border-radius: 999px;
+      color: #07120c;
+      background: linear-gradient(135deg, var(--green), #b9ffd8);
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 0 0 0.65rem;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      letter-spacing: -0.04em;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .link {
+      display: inline-flex;
+      margin-top: 1.35rem;
+      padding: 0.8rem 1.2rem;
+      border-radius: 999px;
+      color: #111;
+      background: linear-gradient(135deg, var(--accent), #fff1cf);
+      text-decoration: none;
+      font-weight: 650;
+    }
+  </style>
+</head>
+<body>
+  <video autoplay muted loop playsinline>
+    <source src="assets/video/furina-loop.mp4" type="video/mp4">
+  </video>
+  <div class="shade"></div>
+  <main class="card">
+    <div class="icon">✓</div>
+    <h1 id="title">Đăng nhập hoàn tất</h1>
+    <p id="copy">Nó sẽ tự chuyển bạn về trang chủ.</p>
+    <a class="link" id="homeLink" href="index.html">Về trang chủ</a>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="backend-config.js"></script>
+  <script>
+    const lang = localStorage.getItem("nnvn-lang") || "vi";
+    const text = {
+      vi: {
+        title: "Đăng nhập hoàn tất",
+        copy: "Nó sẽ tự chuyển bạn về trang chủ.",
+        link: "Về trang chủ"
+      },
+      en: {
+        title: "Login complete",
+        copy: "You will be redirected back to the home page automatically.",
+        link: "Back home"
+      }
+    }[lang] || {
+      title: "Login complete",
+      copy: "You will be redirected back to the home page automatically.",
+      link: "Back home"
+    };
+
+    document.documentElement.lang = lang;
+    document.getElementById("title").textContent = text.title;
+    document.getElementById("copy").textContent = text.copy;
+    document.getElementById("homeLink").textContent = text.link;
+
+    const homeUrl = window.NNVN_BACKEND?.siteUrl || new URL("index.html", window.location.href).href;
+    document.getElementById("homeLink").href = homeUrl;
+
+    if (window.supabase && window.NNVN_BACKEND?.supabaseUrl && window.NNVN_BACKEND?.supabaseAnonKey) {
+      window.supabase.createClient(window.NNVN_BACKEND.supabaseUrl, window.NNVN_BACKEND.supabaseAnonKey, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
+          storageKey: "nnvn-hub-auth"
+        }
+      });
+    }
+
+    window.setTimeout(() => {
+      window.location.replace(homeUrl);
+    }, 1800);
+  </script>
+</body>
+</html>

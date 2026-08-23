@@ -30,11 +30,12 @@ const translations = {
     authOpen: "Đăng nhập Discord",
     authTitle: "Đăng nhập Discord",
     discordLogin: "Tiếp tục bằng Discord",
-    authNote: "Discord sẽ trả về tên và avatar để hiển thị ở menu trái sau khi Supabase Auth được cấu hình.",
+    authNote: "Đăng nhập Discord sẽ được ghi nhớ tự động. Bạn có thể đăng xuất bất cứ lúc nào.",
     authConfigMissing: "Chưa cấu hình Supabase Auth. Bạn cần tạo Supabase project, bật Discord provider, rồi điền URL/anon key vào backend-config.js.",
     authRedirecting: "Đang chuyển tới Discord...",
     authError: "Đăng nhập chưa thành công. Kiểm tra cấu hình Supabase OAuth.",
     authSignedIn: "Đã đăng nhập Discord. Web sẽ tự ghi nhớ tài khoản này.",
+    authAlreadySignedIn: "Bạn đang đăng nhập bằng Discord.",
     authSignedOut: "Đã đăng xuất.",
     signOut: "Đăng xuất",
     searchLabel: "Tìm kiếm",
@@ -131,11 +132,12 @@ const translations = {
     authOpen: "Discord Login",
     authTitle: "Discord Login",
     discordLogin: "Continue with Discord",
-    authNote: "Discord returns the account name and avatar for the left menu after Supabase Auth is configured.",
+    authNote: "Discord login is remembered automatically. You can sign out anytime.",
     authConfigMissing: "Supabase Auth is not configured yet. Create a Supabase project, enable Discord provider, then fill backend-config.js.",
     authRedirecting: "Redirecting to Discord...",
     authError: "Sign in failed. Check your Supabase OAuth settings.",
     authSignedIn: "Discord login active. This website will remember this account.",
+    authAlreadySignedIn: "You are signed in with Discord.",
     authSignedOut: "Signed out.",
     signOut: "Sign out",
     searchLabel: "Search",
@@ -570,7 +572,10 @@ function bindEvents() {
     button.addEventListener("click", () => switchPremiumPanel(button.dataset.premiumSection || "lifetime-key"));
   });
 
-  openAuthButton?.addEventListener("click", () => authModal?.showModal());
+  openAuthButton?.addEventListener("click", () => {
+    setAuthStatus(state.authUser ? t("authAlreadySignedIn") : "");
+    authModal?.showModal();
+  });
   signOutButton?.addEventListener("click", () => signOut());
   oauthButtons.forEach((button) => {
     button.addEventListener("click", () => signInWithProvider(button.dataset.oauthProvider || "discord"));
@@ -829,6 +834,10 @@ function getSupabaseClient() {
 }
 
 function getAuthRedirectUrl() {
+  const callbackUrl = window.NNVN_BACKEND?.authCallbackUrl;
+  if (callbackUrl) {
+    return callbackUrl;
+  }
   const configuredUrl = window.NNVN_BACKEND?.siteUrl;
   if (configuredUrl) {
     return configuredUrl;
