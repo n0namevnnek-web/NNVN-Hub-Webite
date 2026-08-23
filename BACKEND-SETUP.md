@@ -36,6 +36,17 @@ window.NNVN_BACKEND = {
 
 - Neu chua dien config: web hien `View demo`
 - Neu da dien config dung: web hien `View that`
+- Khi dang nhap Discord thanh cong: muc `Protect Script` se luu file theo tung tai khoan Discord rieng.
+
+## Bat kho Protect Script rieng cho tung user
+
+1. Vao Supabase project.
+2. Vao `SQL Editor`.
+3. Copy toan bo noi dung file [supabase-setup.sql](D:/NNVN%20hub/Website/supabase-setup.sql).
+4. Bam `Run`.
+
+Bang `protected_scripts` co `owner_id = auth.uid()`, nen user A chi doc/sua/xoa file cua user A,
+user B chi thay file cua user B.
 
 ## Cach bat login Discord that
 

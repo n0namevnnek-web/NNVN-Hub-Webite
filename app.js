@@ -65,6 +65,8 @@ const translations = {
     validationEmpty: "Không thể upload: script đang trống.",
     validationInvalid: "Không thể upload: cú pháp Luau cơ bản chưa hợp lệ.",
     validationSaved: "Đã tạo mục protected cục bộ.",
+    validationCloudSaved: "Đã lưu script vào tài khoản Discord của bạn.",
+    validationCloudError: "Chưa lưu được lên Supabase. Kiểm tra bảng protected_scripts hoặc đăng nhập Discord.",
     resultReady: "Trang protected đã sẵn sàng",
     pageLabel: "Trang",
     vaultIdLabel: "Mã Vault",
@@ -161,6 +163,8 @@ const translations = {
     validationEmpty: "Cannot upload: the script is empty.",
     validationInvalid: "Cannot upload: basic Luau syntax looks invalid.",
     validationSaved: "Protected entry created locally.",
+    validationCloudSaved: "Script saved to your Discord account.",
+    validationCloudError: "Could not save to Supabase. Check protected_scripts table or Discord login.",
     resultReady: "Protected page ready",
     pageLabel: "Page",
     vaultIdLabel: "Vault ID",
@@ -420,7 +424,9 @@ const state = {
   protectQuery: "",
   protectSort: "newest",
   protectView: "files",
-  editingEntryId: null
+  editingEntryId: null,
+  authUser: null,
+  protectedEntries: []
 };
 
 const tabButtons = [...document.querySelectorAll("[data-tab-target]")];
@@ -485,6 +491,7 @@ async function init() {
   renderScripts();
   renderOverview();
   renderBackendStatus();
+  await hydrateProtectedEntries();
   renderProtectTable();
   switchProtectView("files");
   uploadPanel?.classList.add("hidden");
@@ -603,8 +610,8 @@ function bindEvents() {
     const nextEntries = state.editingEntryId
       ? savedEntries.map((item) => (item.id === entry.id ? entry : item))
       : [entry, ...savedEntries].slice(0, 10);
-    localStorage.setItem("nnvn-vault", JSON.stringify(nextEntries));
-    setValidationMessage(t("validationSaved"));
+    const cloudSaved = await saveProtectedEntries(nextEntries);
+    setValidationMessage(t(cloudSaved ? "validationCloudSaved" : "validationSaved"));
     vaultForm.reset();
     switchMode("paste");
     closeUploadModal();
@@ -800,12 +807,18 @@ function getSupabaseAuthClient() {
   return supabaseClient.auth;
 }
 
+function getSupabaseClient() {
+  getSupabaseAuthClient();
+  return supabaseClient;
+}
+
 async function hydrateAuthUser() {
   const auth = getSupabaseAuthClient();
   if (!auth) return;
   const { data } = await auth.getUser();
   const user = data?.user;
   if (!user) return;
+  state.authUser = user;
   const profile = user.user_metadata || {};
   const displayName = profile.full_name || profile.name || profile.user_name || profile.preferred_username || user.email || "Discord user";
   const avatarUrl = profile.avatar_url || profile.picture || profile.avatar || "";
@@ -986,12 +999,12 @@ function renderProtectTable() {
   });
 
   protectTableBody.querySelectorAll("[data-delete-entry]").forEach((button) => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
       if (!window.confirm(t("confirmDelete"))) {
         return;
       }
       const next = getSavedEntries().filter((item) => item.id !== button.dataset.deleteEntry);
-      localStorage.setItem("nnvn-vault", JSON.stringify(next));
+      await saveProtectedEntries(next);
       renderProtectTable();
     });
   });
@@ -1081,12 +1094,93 @@ function normalizeLuauText(text) {
 }
 
 function getSavedEntries() {
+  if (state.authUser) {
+    return state.protectedEntries;
+  }
   try {
     const raw = localStorage.getItem("nnvn-vault");
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
   }
+}
+
+async function hydrateProtectedEntries() {
+  if (!state.authUser) {
+    state.protectedEntries = getSavedEntries();
+    return;
+  }
+
+  const client = getSupabaseClient();
+  if (!client) return;
+
+  const { data, error } = await client
+    .from("protected_scripts")
+    .select("id,title,body,size_bytes,executions,created_at,updated_at")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    setValidationMessage(t("validationCloudError"));
+    return;
+  }
+
+  state.protectedEntries = (data || []).map(mapProtectedRowToEntry);
+}
+
+async function saveProtectedEntries(entries) {
+  if (!state.authUser) {
+    localStorage.setItem("nnvn-vault", JSON.stringify(entries));
+    state.protectedEntries = entries;
+    return false;
+  }
+
+  const client = getSupabaseClient();
+  if (!client) return false;
+
+  const ids = entries.map((entry) => entry.id);
+  const removedEntries = state.protectedEntries.filter((entry) => !ids.includes(entry.id));
+  if (removedEntries.length) {
+    const { error } = await client
+      .from("protected_scripts")
+      .delete()
+      .in("id", removedEntries.map((entry) => entry.id));
+    if (error) {
+      setValidationMessage(t("validationCloudError"));
+      return false;
+    }
+  }
+
+  const rows = entries.map((entry) => ({
+    id: entry.id,
+    owner_id: state.authUser.id,
+    title: entry.title,
+    body: entry.body,
+    size_bytes: entry.sizeBytes || 0,
+    executions: entry.executions || 0,
+    updated_at: new Date().toISOString()
+  }));
+
+  if (rows.length) {
+    const { error } = await client.from("protected_scripts").upsert(rows);
+    if (error) {
+      setValidationMessage(t("validationCloudError"));
+      return false;
+    }
+  }
+
+  state.protectedEntries = entries;
+  return true;
+}
+
+function mapProtectedRowToEntry(row) {
+  return {
+    id: row.id,
+    title: row.title,
+    body: row.body,
+    createdAt: row.created_at,
+    sizeBytes: row.size_bytes,
+    executions: row.executions || 0
+  };
 }
 
 function incrementEntryExecution(entryId) {
