@@ -39,6 +39,43 @@ $$;
 
 grant execute on function public.increment_script_view(text) to anon, authenticated;
 
+create table if not exists public.site_visitors (
+  visitor_id text primary key,
+  first_seen timestamptz not null default now(),
+  last_seen timestamptz not null default now()
+);
+
+alter table public.site_visitors enable row level security;
+
+create or replace function public.register_site_visitor(input_visitor_id text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into site_visitors (visitor_id)
+  values (input_visitor_id)
+  on conflict (visitor_id)
+  do update set last_seen = now();
+end;
+$$;
+
+create or replace function public.get_site_metrics()
+returns table(total_views bigint, total_users bigint, users_online bigint)
+language sql
+security definer
+set search_path = public
+as $$
+  select
+    coalesce((select sum(views) from script_metrics), 0)::bigint as total_views,
+    (select count(*) from site_visitors)::bigint as total_users,
+    (select count(*) from site_visitors where last_seen >= now() - interval '5 minutes')::bigint as users_online;
+$$;
+
+grant execute on function public.register_site_visitor(text) to anon, authenticated;
+grant execute on function public.get_site_metrics() to anon, authenticated;
+
 create table if not exists public.protected_scripts (
   id text primary key,
   owner_id uuid not null references auth.users(id) on delete cascade,
@@ -80,3 +117,7 @@ on public.protected_scripts
 for delete
 to authenticated
 using (auth.uid() = owner_id);
+
+-- Reset all analytics from zero when you want a fresh start:
+-- truncate table public.script_metrics;
+-- truncate table public.site_visitors;

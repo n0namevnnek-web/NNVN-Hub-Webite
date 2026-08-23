@@ -363,7 +363,7 @@ h2 {
 
 .overview-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
   margin-bottom: 1rem;
 }
@@ -391,6 +391,7 @@ h2 {
   position: relative;
   overflow: hidden;
   min-height: 170px;
+  grid-column: span 2;
 }
 
 .trending-thumb {

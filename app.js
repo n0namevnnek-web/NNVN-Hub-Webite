@@ -12,6 +12,8 @@ const translations = {
     lifetimeHeading: "Premium",
     statScripts: "Tổng script",
     statViews: "Tổng lượt xem",
+    statAllUsers: "Tổng người dùng",
+    statOnlineUsers: "Đang online",
     statPopular: "Đang thịnh hành",
     backendDemo: "NNVN Official",
     backendLive: "NNVN Official",
@@ -115,6 +117,8 @@ const translations = {
     lifetimeHeading: "Premium",
     statScripts: "Total scripts",
     statViews: "Total views",
+    statAllUsers: "All User",
+    statOnlineUsers: "User online",
     statPopular: "Trending now",
     backendDemo: "NNVN Official",
     backendLive: "NNVN Official",
@@ -436,7 +440,12 @@ const state = {
   protectView: "files",
   editingEntryId: null,
   authUser: null,
-  protectedEntries: []
+  protectedEntries: [],
+  siteMetrics: {
+    totalViews: 0,
+    totalUsers: 0,
+    onlineUsers: 0
+  }
 };
 
 const tabButtons = [...document.querySelectorAll("[data-tab-target]")];
@@ -451,6 +460,8 @@ const filters = document.getElementById("filters");
 const scriptGrid = document.getElementById("scriptGrid");
 const totalScripts = document.getElementById("totalScripts");
 const totalViews = document.getElementById("totalViews");
+const totalUsers = document.getElementById("totalUsers");
+const onlineUsers = document.getElementById("onlineUsers");
 const popularScript = document.getElementById("popularScript");
 const popularScriptImage = document.getElementById("popularScriptImage");
 const backendStatus = document.getElementById("backendStatus");
@@ -490,6 +501,8 @@ const scriptName = document.getElementById("scriptName");
 const validationMessage = document.getElementById("validationMessage");
 
 const viewStore = createViewStore();
+const siteStore = createSiteStore();
+let siteMetricsTimer = null;
 
 void init();
 
@@ -511,6 +524,13 @@ async function init() {
 
   try {
     await hydrateViews();
+  } catch {
+    renderOverview();
+  }
+
+  try {
+    await refreshSiteMetrics(true);
+    startSiteMetricsHeartbeat();
   } catch {
     renderOverview();
   }
@@ -1053,9 +1073,13 @@ function renderScripts() {
 }
 
 async function incrementView(item) {
+  const previous = item.views;
   const updated = await viewStore.bump(item.id);
   item.views = updated;
   item.popularity = updated;
+  if (updated > previous) {
+    state.siteMetrics.totalViews += updated - previous;
+  }
   renderScripts();
   renderOverview();
 }
@@ -1065,7 +1089,14 @@ function renderOverview() {
     totalScripts.textContent = String(scripts.length);
   }
   if (totalViews) {
-    totalViews.textContent = formatNumber(scripts.reduce((sum, item) => sum + item.views, 0));
+    const fallbackViews = scripts.reduce((sum, item) => sum + item.views, 0);
+    totalViews.textContent = formatNumber(state.siteMetrics.totalViews || fallbackViews);
+  }
+  if (totalUsers) {
+    totalUsers.textContent = formatNumber(state.siteMetrics.totalUsers || 0);
+  }
+  if (onlineUsers) {
+    onlineUsers.textContent = formatNumber(state.siteMetrics.onlineUsers || 0);
   }
   if (popularScript) {
     const top = scripts.slice().sort((a, b) => b.views - a.views)[0];
@@ -1438,6 +1469,7 @@ function createViewStore() {
     enabled,
     async fetchCounts(ids) {
       const localCounts = Object.fromEntries(ids.map((id) => [id, readLocalCount(id)]));
+      const remoteCounts = Object.fromEntries(ids.map((id) => [id, 0]));
 
       if (!enabled) {
         return localCounts;
@@ -1455,12 +1487,15 @@ function createViewStore() {
         if (error) {
           throw error;
         }
+        ids.forEach((id) => {
+          localStorage.setItem(`nnvn-demo-view:${id}`, "0");
+        });
         rows.forEach((row) => {
-          const next = Math.max(Number(row.views) || 0, localCounts[row.script_id] || 0);
-          localCounts[row.script_id] = next;
+          const next = Number(row.views) || 0;
+          remoteCounts[row.script_id] = next;
           localStorage.setItem(`nnvn-demo-view:${row.script_id}`, String(next));
         });
-        return localCounts;
+        return remoteCounts;
       } catch {
         return localCounts;
       }
@@ -1487,7 +1522,7 @@ function createViewStore() {
         if (error) {
           throw error;
         }
-        const liveCount = Math.max(Number(value) || 0, readLocalCount(id));
+        const liveCount = Number(value) || 0;
         localStorage.setItem(`nnvn-demo-view:${id}`, String(liveCount));
         sessionStorage.setItem(sessionKey(id), "1");
         return liveCount;
@@ -1497,6 +1532,92 @@ function createViewStore() {
       }
     }
   };
+}
+
+function createSiteStore() {
+  const config = window.NNVN_BACKEND || {};
+  const enabled = Boolean(config.supabaseUrl && config.supabaseAnonKey);
+  const visitorKey = "nnvn-site-visitor-id";
+  const getClient = () => getSupabaseClient();
+
+  const getVisitorId = () => {
+    let visitorId = localStorage.getItem(visitorKey);
+    if (visitorId) {
+      return visitorId;
+    }
+    visitorId = window.crypto?.randomUUID?.() || `visitor-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    localStorage.setItem(visitorKey, visitorId);
+    return visitorId;
+  };
+
+  return {
+    enabled,
+    async registerCurrentVisitor() {
+      if (!enabled) {
+        return null;
+      }
+      const client = getClient();
+      if (!client) {
+        throw new Error("Supabase client is not ready yet.");
+      }
+      const { error } = await client.rpc("register_site_visitor", {
+        input_visitor_id: getVisitorId()
+      });
+      if (error) {
+        throw error;
+      }
+      return getVisitorId();
+    },
+    async fetchSiteMetrics() {
+      if (!enabled) {
+        return {
+          totalViews: scripts.reduce((sum, item) => sum + item.views, 0),
+          totalUsers: 1,
+          onlineUsers: 1
+        };
+      }
+      const client = getClient();
+      if (!client) {
+        throw new Error("Supabase client is not ready yet.");
+      }
+      const { data, error } = await client.rpc("get_site_metrics");
+      if (error) {
+        throw error;
+      }
+      const row = Array.isArray(data) ? data[0] : data;
+      return {
+        totalViews: Number(row?.total_views) || 0,
+        totalUsers: Number(row?.total_users) || 0,
+        onlineUsers: Number(row?.users_online) || 0
+      };
+    }
+  };
+}
+
+async function refreshSiteMetrics(registerPresence = false) {
+  if (registerPresence) {
+    await siteStore.registerCurrentVisitor();
+  }
+  const metrics = await siteStore.fetchSiteMetrics();
+  state.siteMetrics = metrics;
+  renderOverview();
+}
+
+function startSiteMetricsHeartbeat() {
+  if (!siteStore.enabled || siteMetricsTimer) {
+    return;
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      void refreshSiteMetrics(true);
+    }
+  });
+  window.addEventListener("focus", () => {
+    void refreshSiteMetrics(true);
+  });
+  siteMetricsTimer = window.setInterval(() => {
+    void refreshSiteMetrics(true);
+  }, 60000);
 }
 
 function shorten(value, maxLength) {
