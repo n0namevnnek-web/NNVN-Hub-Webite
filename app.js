@@ -34,6 +34,9 @@ const translations = {
     authConfigMissing: "Chưa cấu hình Supabase Auth. Bạn cần tạo Supabase project, bật Discord provider, rồi điền URL/anon key vào backend-config.js.",
     authRedirecting: "Đang chuyển tới Discord...",
     authError: "Đăng nhập chưa thành công. Kiểm tra cấu hình Supabase OAuth.",
+    authSignedIn: "Đã đăng nhập Discord. Web sẽ tự ghi nhớ tài khoản này.",
+    authSignedOut: "Đã đăng xuất.",
+    signOut: "Đăng xuất",
     searchLabel: "Tìm kiếm",
     searchPlaceholder: "Tìm script...",
     timeLabel: "Phạm vi",
@@ -132,6 +135,9 @@ const translations = {
     authConfigMissing: "Supabase Auth is not configured yet. Create a Supabase project, enable Discord provider, then fill backend-config.js.",
     authRedirecting: "Redirecting to Discord...",
     authError: "Sign in failed. Check your Supabase OAuth settings.",
+    authSignedIn: "Discord login active. This website will remember this account.",
+    authSignedOut: "Signed out.",
+    signOut: "Sign out",
     searchLabel: "Search",
     searchPlaceholder: "Search scripts...",
     timeLabel: "Range",
@@ -463,6 +469,7 @@ const uploadModalTitle = document.getElementById("uploadModalTitle");
 const authModal = document.getElementById("authModal");
 const openAuthButton = document.getElementById("openAuthButton");
 const authStatus = document.getElementById("authStatus");
+const signOutButton = document.getElementById("signOutButton");
 const languageButtons = [...document.querySelectorAll("[data-lang]")];
 const modeButtons = [...document.querySelectorAll("[data-mode]")];
 const modePanels = [...document.querySelectorAll("[data-mode-panel]")];
@@ -487,6 +494,7 @@ async function init() {
   bindEvents();
   clearLegacyDemoLogin();
   await hydrateAuthUser();
+  bindAuthMemory();
   renderFilters();
   renderScripts();
   renderOverview();
@@ -563,6 +571,7 @@ function bindEvents() {
   });
 
   openAuthButton?.addEventListener("click", () => authModal?.showModal());
+  signOutButton?.addEventListener("click", () => signOut());
   oauthButtons.forEach((button) => {
     button.addEventListener("click", () => signInWithProvider(button.dataset.oauthProvider || "discord"));
   });
@@ -802,7 +811,14 @@ function getSupabaseAuthClient() {
     return null;
   }
   if (!supabaseClient) {
-    supabaseClient = window.supabase.createClient(window.NNVN_BACKEND.supabaseUrl, window.NNVN_BACKEND.supabaseAnonKey);
+    supabaseClient = window.supabase.createClient(window.NNVN_BACKEND.supabaseUrl, window.NNVN_BACKEND.supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storageKey: "nnvn-hub-auth"
+      }
+    });
   }
   return supabaseClient.auth;
 }
@@ -823,14 +839,58 @@ function getAuthRedirectUrl() {
 async function hydrateAuthUser() {
   const auth = getSupabaseAuthClient();
   if (!auth) return;
-  const { data } = await auth.getUser();
-  const user = data?.user;
-  if (!user) return;
+  const { data: sessionData } = await auth.getSession();
+  const user = sessionData?.session?.user || (await auth.getUser()).data?.user;
+  applyAuthUser(user || null);
+  cleanupAuthCallbackUrl();
+}
+
+function bindAuthMemory() {
+  const auth = getSupabaseAuthClient();
+  if (!auth) return;
+  auth.onAuthStateChange(async (_event, session) => {
+    applyAuthUser(session?.user || null);
+    await hydrateProtectedEntries();
+    renderProtectTable();
+    cleanupAuthCallbackUrl();
+  });
+}
+
+function applyAuthUser(user) {
   state.authUser = user;
+  if (!user) {
+    setSidebarUser("n0namevn", "");
+    if (openAuthButton) openAuthButton.textContent = t("authOpen");
+    signOutButton?.classList.add("hidden");
+    return;
+  }
   const profile = user.user_metadata || {};
   const displayName = profile.full_name || profile.name || profile.user_name || profile.preferred_username || user.email || "Discord user";
   const avatarUrl = profile.avatar_url || profile.picture || profile.avatar || "";
   setSidebarUser(displayName, avatarUrl);
+  if (openAuthButton) openAuthButton.textContent = displayName;
+  signOutButton?.classList.remove("hidden");
+  setAuthStatus(t("authSignedIn"));
+}
+
+async function signOut() {
+  const auth = getSupabaseAuthClient();
+  if (auth) {
+    await auth.signOut();
+  }
+  state.protectedEntries = [];
+  applyAuthUser(null);
+  setAuthStatus(t("authSignedOut"));
+  renderProtectTable();
+}
+
+function cleanupAuthCallbackUrl() {
+  const hasAuthHash = window.location.hash.includes("access_token") || window.location.hash.includes("refresh_token");
+  const params = new URLSearchParams(window.location.search);
+  const hasAuthQuery = params.has("code") || params.has("error") || params.has("error_description");
+  if (!hasAuthHash && !hasAuthQuery) return;
+  const cleanUrl = `${window.location.origin}${window.location.pathname}`;
+  window.history.replaceState({}, document.title, cleanUrl);
 }
 
 function clearLegacyDemoLogin() {
