@@ -149,10 +149,16 @@
             persistSession: true,
             autoRefreshToken: true,
             detectSessionInUrl: true,
+            flowType: "pkce",
             storageKey: "nnvn-hub-auth"
           }
         });
-        await client.auth.getSession();
+        const code = new URLSearchParams(window.location.search).get("code");
+        if (code) {
+          await client.auth.exchangeCodeForSession(code);
+        } else {
+          await client.auth.getSession();
+        }
       }
 
       window.setTimeout(() => {
