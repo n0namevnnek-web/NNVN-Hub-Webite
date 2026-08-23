@@ -31,6 +31,8 @@ const translations = {
     authTitle: "Đăng nhập / Đăng kí",
     emailLogin: "Tiếp tục bằng Email",
     authNote: "Khi nối Supabase Auth, Discord sẽ trả về tên và avatar để hiển thị ở menu trái.",
+    authLocalReady: "Đã đăng nhập demo trên thiết bị này.",
+    authEmailRequired: "Nhập email trước nhé.",
     searchLabel: "Tìm kiếm",
     searchPlaceholder: "Tìm script...",
     timeLabel: "Phạm vi",
@@ -124,6 +126,8 @@ const translations = {
     authTitle: "Sign in / Sign up",
     emailLogin: "Continue with Email",
     authNote: "After Supabase Auth is connected, Discord can return the user name and avatar for the sidebar.",
+    authLocalReady: "Demo login saved on this device.",
+    authEmailRequired: "Enter an email first.",
     searchLabel: "Search",
     searchPlaceholder: "Search scripts...",
     timeLabel: "Range",
@@ -286,6 +290,114 @@ const scripts = [
     popularity: 0,
     image: "assets/images/survive-zombie-arena.png",
     code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/n0namevnnek-web/Survive-Zombie-Arena/refs/heads/main/Key.lua"))()`
+  },
+  {
+    id: "grow-a-chicken-fighter",
+    title: "Grow A Chicken Fighter",
+    createdAt: "2026-08-23",
+    views: 0,
+    popularity: 0,
+    image: "assets/images/grow-a-chicken-fighter.png",
+    code: ""
+  },
+  {
+    id: "double-jump-bike-escape",
+    title: "+1 Double Jump Bike Escape",
+    createdAt: "2026-08-23",
+    views: 0,
+    popularity: 0,
+    image: "assets/images/double-jump-bike-escape.png",
+    code: ""
+  },
+  {
+    id: "kick-ball-to-space",
+    title: "Kick Ball to Space",
+    createdAt: "2026-08-23",
+    views: 0,
+    popularity: 0,
+    image: "assets/images/kick-ball-to-space.png",
+    code: ""
+  },
+  {
+    id: "zombie-beta",
+    title: "Zombie [BETA]",
+    createdAt: "2026-08-23",
+    views: 0,
+    popularity: 0,
+    image: "assets/images/zombie-beta.png",
+    code: ""
+  },
+  {
+    id: "speed-boat-tsunami",
+    title: "+1 Speed Boat Tsunami",
+    createdAt: "2026-08-23",
+    views: 0,
+    popularity: 0,
+    image: "assets/images/speed-boat-tsunami.png",
+    code: ""
+  },
+  {
+    id: "speed-vs-giant",
+    title: "Speed vs Giant",
+    createdAt: "2026-08-23",
+    views: 0,
+    popularity: 0,
+    image: "assets/images/speed-vs-giant.png",
+    code: ""
+  },
+  {
+    id: "brainblast-luckyblock",
+    title: "Brainblast LuckyBlock",
+    createdAt: "2026-08-23",
+    views: 0,
+    popularity: 0,
+    image: "assets/images/brainblast-luckyblock.png",
+    code: ""
+  },
+  {
+    id: "speed-per-click",
+    title: "+1 Speed Per Click",
+    createdAt: "2026-08-23",
+    views: 0,
+    popularity: 0,
+    image: "assets/images/speed-per-click.png",
+    code: ""
+  },
+  {
+    id: "loot-up",
+    title: "+1 Loot UP",
+    createdAt: "2026-08-23",
+    views: 0,
+    popularity: 0,
+    image: "assets/images/loot-up.png",
+    code: ""
+  },
+  {
+    id: "get-fat-to-break-tape",
+    title: "Get Fat to Break Tape",
+    createdAt: "2026-08-23",
+    views: 0,
+    popularity: 0,
+    image: "assets/images/get-fat-to-break-tape.png",
+    code: ""
+  },
+  {
+    id: "the-strongest-battleground",
+    title: "The Strongest BattleGround",
+    createdAt: "2026-08-23",
+    views: 0,
+    popularity: 0,
+    image: "assets/images/the-strongest-battleground.png",
+    code: ""
+  },
+  {
+    id: "forsaken",
+    title: "Forsaken",
+    createdAt: "2026-08-23",
+    views: 0,
+    popularity: 0,
+    image: "assets/images/forsaken.png",
+    code: ""
   }
 ].map((item) => ({
   ...item,
@@ -343,6 +455,7 @@ const authModal = document.getElementById("authModal");
 const openAuthButton = document.getElementById("openAuthButton");
 const authEmail = document.getElementById("authEmail");
 const emailLoginButton = document.getElementById("emailLoginButton");
+const authStatus = document.getElementById("authStatus");
 const languageButtons = [...document.querySelectorAll("[data-lang]")];
 const modeButtons = [...document.querySelectorAll("[data-mode]")];
 const modePanels = [...document.querySelectorAll("[data-mode-panel]")];
@@ -365,6 +478,7 @@ void init();
 async function init() {
   setLanguage(state.lang, false);
   bindEvents();
+  hydrateLocalAuthUser();
   await hydrateAuthUser();
   renderFilters();
   renderScripts();
@@ -661,11 +775,12 @@ function switchPremiumPanel(section) {
 async function signInWithProvider(provider) {
   const auth = getSupabaseAuthClient();
   if (!auth) {
-    setSidebarUser(
-      provider === "discord" ? "Discord user" : "Google user",
-      provider === "discord" ? "assets/images/discord-icon.png" : "assets/images/google-icon.png"
-    );
-    authModal?.close();
+    saveLocalAuthUser({
+      name: provider === "discord" ? "Discord user" : "Google user",
+      avatarUrl: provider === "discord" ? "assets/images/discord-icon.png" : "assets/images/google-icon.png"
+    });
+    setAuthStatus(t("authLocalReady"));
+    setTimeout(() => authModal?.close(), 450);
     return;
   }
   await auth.signInWithOAuth({
@@ -676,11 +791,18 @@ async function signInWithProvider(provider) {
 
 async function signInWithEmail(email) {
   const cleanEmail = email.trim();
-  if (!cleanEmail) return;
+  if (!cleanEmail) {
+    setAuthStatus(t("authEmailRequired"));
+    return;
+  }
   const auth = getSupabaseAuthClient();
   if (!auth) {
-    setSidebarUser(cleanEmail.split("@")[0]);
-    authModal?.close();
+    saveLocalAuthUser({
+      name: cleanEmail.split("@")[0],
+      avatarUrl: ""
+    });
+    setAuthStatus(t("authLocalReady"));
+    setTimeout(() => authModal?.close(), 450);
     return;
   }
   await auth.signInWithOtp({
@@ -704,6 +826,30 @@ async function hydrateAuthUser() {
   if (!user) return;
   const profile = user.user_metadata || {};
   setSidebarUser(profile.full_name || profile.name || user.email || "NNVN user", profile.avatar_url || "");
+}
+
+function hydrateLocalAuthUser() {
+  const rawUser = localStorage.getItem("nnvn-local-user");
+  if (!rawUser) return;
+  try {
+    const user = JSON.parse(rawUser);
+    if (user?.name) {
+      setSidebarUser(user.name, user.avatarUrl || "");
+    }
+  } catch {
+    localStorage.removeItem("nnvn-local-user");
+  }
+}
+
+function saveLocalAuthUser(user) {
+  localStorage.setItem("nnvn-local-user", JSON.stringify(user));
+  setSidebarUser(user.name, user.avatarUrl || "");
+}
+
+function setAuthStatus(message) {
+  if (authStatus) {
+    authStatus.textContent = message;
+  }
 }
 
 function setSidebarUser(name, avatarUrl = "") {
