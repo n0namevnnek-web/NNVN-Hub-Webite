@@ -62,6 +62,13 @@ Redirect URL nen them:
 https://n0namevnnek-web.github.io/NNVN-Hub-Webite/
 ```
 
+Trong Supabase, vao `Authentication > URL Configuration`, dat:
+
+```text
+Site URL: https://n0namevnnek-web.github.io/NNVN-Hub-Webite/
+Redirect URLs: https://n0namevnnek-web.github.io/NNVN-Hub-Webite/
+```
+
 Neu test tren may tinh thi them ca:
 
 ```text

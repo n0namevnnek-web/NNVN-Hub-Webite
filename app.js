@@ -788,7 +788,7 @@ async function signInWithProvider() {
   setAuthStatus(t("authRedirecting"));
   const { error } = await auth.signInWithOAuth({
     provider: "discord",
-    options: { redirectTo: window.location.origin + window.location.pathname }
+    options: { redirectTo: getAuthRedirectUrl() }
   });
   if (error) {
     setAuthStatus(t("authError"));
@@ -810,6 +810,14 @@ function getSupabaseAuthClient() {
 function getSupabaseClient() {
   getSupabaseAuthClient();
   return supabaseClient;
+}
+
+function getAuthRedirectUrl() {
+  const configuredUrl = window.NNVN_BACKEND?.siteUrl;
+  if (configuredUrl) {
+    return configuredUrl;
+  }
+  return window.location.origin + window.location.pathname;
 }
 
 async function hydrateAuthUser() {
