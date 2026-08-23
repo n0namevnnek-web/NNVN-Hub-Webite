@@ -572,7 +572,11 @@ function bindEvents() {
     button.addEventListener("click", () => switchPremiumPanel(button.dataset.premiumSection || "lifetime-key"));
   });
 
-  openAuthButton?.addEventListener("click", () => {
+  openAuthButton?.addEventListener("click", async () => {
+    if (state.authUser) {
+      await signOut();
+      return;
+    }
     setAuthStatus(state.authUser ? t("authAlreadySignedIn") : "");
     authModal?.showModal();
   });
@@ -868,7 +872,7 @@ function bindAuthMemory() {
 function applyAuthUser(user) {
   state.authUser = user;
   if (!user) {
-    setSidebarUser("n0namevn", "");
+    setSidebarUser("Guest", "assets/images/guest-avatar.png");
     if (openAuthButton) openAuthButton.textContent = t("authOpen");
     signOutButton?.classList.add("hidden");
     return;
@@ -877,7 +881,7 @@ function applyAuthUser(user) {
   const displayName = profile.full_name || profile.name || profile.user_name || profile.preferred_username || user.email || "Discord user";
   const avatarUrl = profile.avatar_url || profile.picture || profile.avatar || "";
   setSidebarUser(displayName, avatarUrl);
-  if (openAuthButton) openAuthButton.textContent = displayName;
+  if (openAuthButton) openAuthButton.textContent = t("signOut");
   signOutButton?.classList.remove("hidden");
   setAuthStatus(t("authSignedIn"));
 }

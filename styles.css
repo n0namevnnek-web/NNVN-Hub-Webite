@@ -208,6 +208,14 @@ select option {
   background: linear-gradient(135deg, var(--accent), #fff1cf);
   color: #111;
   font-weight: 700;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.guest-avatar {
+  background-image: url("assets/images/guest-avatar.png");
+  background-color: #f7f7f7;
 }
 
 .user-info {

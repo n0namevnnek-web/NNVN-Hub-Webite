@@ -142,20 +142,25 @@
     const homeUrl = window.NNVN_BACKEND?.siteUrl || new URL("index.html", window.location.href).href;
     document.getElementById("homeLink").href = homeUrl;
 
-    if (window.supabase && window.NNVN_BACKEND?.supabaseUrl && window.NNVN_BACKEND?.supabaseAnonKey) {
-      window.supabase.createClient(window.NNVN_BACKEND.supabaseUrl, window.NNVN_BACKEND.supabaseAnonKey, {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true,
-          storageKey: "nnvn-hub-auth"
-        }
-      });
+    async function finishLogin() {
+      if (window.supabase && window.NNVN_BACKEND?.supabaseUrl && window.NNVN_BACKEND?.supabaseAnonKey) {
+        const client = window.supabase.createClient(window.NNVN_BACKEND.supabaseUrl, window.NNVN_BACKEND.supabaseAnonKey, {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+            storageKey: "nnvn-hub-auth"
+          }
+        });
+        await client.auth.getSession();
+      }
+
+      window.setTimeout(() => {
+        window.location.replace(homeUrl);
+      }, 1400);
     }
 
-    window.setTimeout(() => {
-      window.location.replace(homeUrl);
-    }, 1800);
+    void finishLogin();
   </script>
 </body>
 </html>
