@@ -300,7 +300,7 @@ const scripts = [
     views: 0,
     popularity: 0,
     image: "assets/images/grow-a-chicken-fighter.png",
-    code: ""
+    code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/n0namevnnek-web/Grow-a-Chicken-Fighter/refs/heads/main/Key.lua"))()`
   },
   {
     id: "double-jump-bike-escape",
@@ -309,7 +309,7 @@ const scripts = [
     views: 0,
     popularity: 0,
     image: "assets/images/double-jump-bike-escape.png",
-    code: ""
+    code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/n0namevnnek-web/-1-Double-Jump-Bike-Escape-/refs/heads/main/Key.lua"))()`
   },
   {
     id: "kick-ball-to-space",
@@ -318,7 +318,7 @@ const scripts = [
     views: 0,
     popularity: 0,
     image: "assets/images/kick-ball-to-space.png",
-    code: ""
+    code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/n0namevnnek-web/Kick-Ball-to-Space-/refs/heads/main/Key.lua"))()`
   },
   {
     id: "zombie-beta",
@@ -327,7 +327,7 @@ const scripts = [
     views: 0,
     popularity: 0,
     image: "assets/images/zombie-beta.png",
-    code: ""
+    code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/n0namevnnek-web/Zombies-/refs/heads/main/Key.lua"))()`
   },
   {
     id: "speed-boat-tsunami",
@@ -336,7 +336,7 @@ const scripts = [
     views: 0,
     popularity: 0,
     image: "assets/images/speed-boat-tsunami.png",
-    code: ""
+    code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/n0namevnnek-web/-1-Speed-Boat-Tsunami/refs/heads/main/Key.lua"))()`
   },
   {
     id: "speed-vs-giant",
@@ -345,7 +345,7 @@ const scripts = [
     views: 0,
     popularity: 0,
     image: "assets/images/speed-vs-giant.png",
-    code: ""
+    code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/n0namevnnek-web/Speed-vs-Giant/refs/heads/main/Key.lua"))()`
   },
   {
     id: "brainblast-luckyblock",
@@ -354,7 +354,7 @@ const scripts = [
     views: 0,
     popularity: 0,
     image: "assets/images/brainblast-luckyblock.png",
-    code: ""
+    code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/n0namevnnek-web/Brainblast-a-Lucky-Block-/refs/heads/main/Key.lua"))()`
   },
   {
     id: "speed-per-click",
@@ -363,7 +363,7 @@ const scripts = [
     views: 0,
     popularity: 0,
     image: "assets/images/speed-per-click.png",
-    code: ""
+    code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/n0namevnnek-web/1-Speed-Per-Click/refs/heads/main/Key.lua"))()`
   },
   {
     id: "loot-up",
@@ -372,7 +372,7 @@ const scripts = [
     views: 0,
     popularity: 0,
     image: "assets/images/loot-up.png",
-    code: ""
+    code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/n0namevnnek-web/Loot-Evo/refs/heads/main/Key.lua"))()`
   },
   {
     id: "get-fat-to-break-tape",
@@ -381,7 +381,7 @@ const scripts = [
     views: 0,
     popularity: 0,
     image: "assets/images/get-fat-to-break-tape-new.png",
-    code: ""
+    code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/n0namevnnek-web/Get-Fat-to-Break-Tape/refs/heads/main/Key.lua"))()`
   },
   {
     id: "the-strongest-battleground",
@@ -390,7 +390,7 @@ const scripts = [
     views: 0,
     popularity: 0,
     image: "assets/images/the-strongest-battleground-new.png",
-    code: ""
+    code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/n0namevnnek-web/The-Strongest-BattleGrounds/refs/heads/main/Key.lua"))()`
   },
   {
     id: "forsaken",
@@ -399,11 +399,11 @@ const scripts = [
     views: 0,
     popularity: 0,
     image: "assets/images/forsaken-new.png",
-    code: ""
+    code: `loadstring(game:HttpGet("https://raw.githubusercontent.com/n0namevnnek-web/Forsaken/refs/heads/main/Key.lua"))()`
   }
 ].map((item) => ({
   ...item,
-  tags: [translations.vi.externalTag],
+  tags: [translations.en.externalTag],
   description: {
     vi: "Thư viện chính thức của NNVN Hub cho game này.",
     en: "Official NNVN Hub library entry for this game."
@@ -411,7 +411,7 @@ const scripts = [
 }));
 
 const state = {
-  lang: localStorage.getItem("nnvn-lang") || "vi",
+  lang: localStorage.getItem("nnvn-lang") || "en",
   query: "",
   sort: "newest",
   selectedScript: null,
@@ -506,7 +506,7 @@ function bindEvents() {
   });
 
   languageButtons.forEach((button) => {
-    button.addEventListener("click", () => setLanguage(button.dataset.lang || "vi"));
+    button.addEventListener("click", () => setLanguage(button.dataset.lang || "en"));
   });
 
   searchInput?.addEventListener("input", (event) => {
@@ -647,7 +647,7 @@ async function hydrateViews() {
 }
 
 function setLanguage(lang, persist = true) {
-  state.lang = translations[lang] ? lang : "vi";
+  state.lang = translations[lang] ? lang : "en";
   document.documentElement.lang = state.lang;
 
   if (persist) {
@@ -1099,7 +1099,7 @@ function incrementEntryExecution(entryId) {
 
 function openProtectedEntry(entry) {
   const html = `<!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1126,11 +1126,11 @@ function getText(value) {
   if (typeof value === "string") {
     return value;
   }
-  return value[state.lang] || value.vi || value.en || "";
+  return value[state.lang] || value.en || value.vi || "";
 }
 
 function t(key) {
-  return translations[state.lang]?.[key] || translations.vi[key] || key;
+  return translations[state.lang]?.[key] || translations.en[key] || key;
 }
 
 function formatDate(dateValue) {
