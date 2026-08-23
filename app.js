@@ -1421,8 +1421,10 @@ function createViewStore() {
   return {
     enabled,
     async fetchCounts(ids) {
+      const localCounts = Object.fromEntries(ids.map((id) => [id, readLocalCount(id)]));
+
       if (!enabled) {
-        return Object.fromEntries(ids.map((id) => [id, readLocalCount(id)]));
+        return localCounts;
       }
 
       try {
@@ -1439,9 +1441,14 @@ function createViewStore() {
           throw new Error("View table is not ready yet.");
         }
         const rows = await response.json();
-        return Object.fromEntries(rows.map((row) => [row.script_id, row.views]));
+        rows.forEach((row) => {
+          const next = Math.max(Number(row.views) || 0, localCounts[row.script_id] || 0);
+          localCounts[row.script_id] = next;
+          localStorage.setItem(`nnvn-demo-view:${row.script_id}`, String(next));
+        });
+        return localCounts;
       } catch {
-        return Object.fromEntries(ids.map((id) => [id, readLocalCount(id)]));
+        return localCounts;
       }
     },
     async bump(id) {
@@ -1469,7 +1476,7 @@ function createViewStore() {
           throw new Error("View counter is not ready yet.");
         }
         const value = await response.json();
-        const liveCount = Number(value) || 0;
+        const liveCount = Math.max(Number(value) || 0, readLocalCount(id));
         localStorage.setItem(`nnvn-demo-view:${id}`, String(liveCount));
         sessionStorage.setItem(sessionKey(id), "1");
         return liveCount;
