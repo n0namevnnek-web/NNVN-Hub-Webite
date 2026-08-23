@@ -1416,6 +1416,7 @@ function createViewStore() {
     localStorage.setItem(`nnvn-demo-view:${id}`, String(next));
     return next;
   };
+  const sessionKey = (id) => `nnvn-session-viewed:${id}`;
 
   return {
     enabled,
@@ -1444,7 +1445,13 @@ function createViewStore() {
       }
     },
     async bump(id) {
+      if (sessionStorage.getItem(sessionKey(id))) {
+        const counts = await this.fetchCounts([id]);
+        return counts[id] ?? readLocalCount(id);
+      }
+
       if (!enabled) {
+        sessionStorage.setItem(sessionKey(id), "1");
         return bumpLocalCount(id);
       }
 
@@ -1464,8 +1471,10 @@ function createViewStore() {
         const value = await response.json();
         const liveCount = Number(value) || 0;
         localStorage.setItem(`nnvn-demo-view:${id}`, String(liveCount));
+        sessionStorage.setItem(sessionKey(id), "1");
         return liveCount;
       } catch {
+        sessionStorage.setItem(sessionKey(id), "1");
         return bumpLocalCount(id);
       }
     }
