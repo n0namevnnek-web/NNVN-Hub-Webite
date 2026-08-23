@@ -1409,16 +1409,18 @@ function createPreview(label, index) {
 function createViewStore() {
   const config = window.NNVN_BACKEND || {};
   const enabled = Boolean(config.supabaseUrl && config.supabaseAnonKey);
+  const readLocalCount = (id) => Number(localStorage.getItem(`nnvn-demo-view:${id}`) || 0);
+  const bumpLocalCount = (id) => {
+    const next = readLocalCount(id) + 1;
+    localStorage.setItem(`nnvn-demo-view:${id}`, String(next));
+    return next;
+  };
 
   return {
     enabled,
     async fetchCounts(ids) {
       if (!enabled) {
-        const fallback = {};
-        ids.forEach((id) => {
-          fallback[id] = Number(localStorage.getItem(`nnvn-demo-view:${id}`) || 0);
-        });
-        return fallback;
+        return Object.fromEntries(ids.map((id) => [id, readLocalCount(id)]));
       }
 
       try {
@@ -1431,23 +1433,18 @@ function createViewStore() {
             Authorization: `Bearer ${config.supabaseAnonKey}`
           }
         });
+        if (!response.ok) {
+          throw new Error("View table is not ready yet.");
+        }
         const rows = await response.json();
         return Object.fromEntries(rows.map((row) => [row.script_id, row.views]));
       } catch {
-        return {};
+        return Object.fromEntries(ids.map((id) => [id, readLocalCount(id)]));
       }
     },
     async bump(id) {
       if (!enabled) {
-        const next = Number(localStorage.getItem(`nnvn-demo-view:${id}`) || 0) + 1;
-        localStorage.setItem(`nnvn-demo-view:${id}`, String(next));
-        return next;
-      }
-
-      const dedupeKey = `nnvn-live-view:${id}:${new Date().toISOString().slice(0, 10)}`;
-      if (localStorage.getItem(dedupeKey)) {
-        const counts = await this.fetchCounts([id]);
-        return counts[id] ?? 0;
+        return bumpLocalCount(id);
       }
 
       try {
@@ -1460,11 +1457,15 @@ function createViewStore() {
           },
           body: JSON.stringify({ input_script_id: id })
         });
+        if (!response.ok) {
+          throw new Error("View counter is not ready yet.");
+        }
         const value = await response.json();
-        localStorage.setItem(dedupeKey, "1");
-        return Number(value) || 0;
+        const liveCount = Number(value) || 0;
+        localStorage.setItem(`nnvn-demo-view:${id}`, String(liveCount));
+        return liveCount;
       } catch {
-        return 0;
+        return bumpLocalCount(id);
       }
     }
   };

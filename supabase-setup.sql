@@ -6,25 +6,30 @@ create table if not exists public.script_metrics (
 
 alter table public.script_metrics enable row level security;
 
+grant usage on schema public to anon, authenticated;
+grant select on public.script_metrics to anon, authenticated;
+
+drop policy if exists "public can read metrics" on public.script_metrics;
 create policy "public can read metrics"
 on public.script_metrics
 for select
-to anon
+to anon, authenticated
 using (true);
 
 create or replace function public.increment_script_view(input_script_id text)
 returns bigint
 language plpgsql
 security definer
+set search_path = public
 as $$
 declare
   next_views bigint;
 begin
-  insert into public.script_metrics (script_id, views)
+  insert into script_metrics (script_id, views)
   values (input_script_id, 1)
   on conflict (script_id)
   do update set
-    views = public.script_metrics.views + 1,
+    views = script_metrics.views + 1,
     updated_at = now()
   returning views into next_views;
 
@@ -32,7 +37,7 @@ begin
 end;
 $$;
 
-grant execute on function public.increment_script_view(text) to anon;
+grant execute on function public.increment_script_view(text) to anon, authenticated;
 
 create table if not exists public.protected_scripts (
   id text primary key,
