@@ -507,6 +507,7 @@ let siteMetricsTimer = null;
 void init();
 
 async function init() {
+  clearAnalyticsBrowserCache();
   setLanguage(state.lang, false);
   bindEvents();
   clearLegacyDemoLogin();
@@ -1497,7 +1498,7 @@ function createViewStore() {
         });
         return remoteCounts;
       } catch {
-        return localCounts;
+        return remoteCounts;
       }
     },
     async bump(id) {
@@ -1527,11 +1528,34 @@ function createViewStore() {
         sessionStorage.setItem(sessionKey(id), "1");
         return liveCount;
       } catch {
-        sessionStorage.setItem(sessionKey(id), "1");
-        return bumpLocalCount(id);
+        const counts = await this.fetchCounts([id]);
+        return counts[id] ?? 0;
       }
     }
   };
+}
+
+function clearAnalyticsBrowserCache() {
+  if (!viewStore.enabled) {
+    return;
+  }
+  const analyticsVersion = "20260823-backend-only";
+  const versionKey = "nnvn-analytics-cache-version";
+  if (localStorage.getItem(versionKey) === analyticsVersion) {
+    return;
+  }
+
+  Object.keys(localStorage).forEach((key) => {
+    if (key.startsWith("nnvn-demo-view:")) {
+      localStorage.removeItem(key);
+    }
+  });
+  Object.keys(sessionStorage).forEach((key) => {
+    if (key.startsWith("nnvn-session-viewed:")) {
+      sessionStorage.removeItem(key);
+    }
+  });
+  localStorage.setItem(versionKey, analyticsVersion);
 }
 
 function createSiteStore() {
