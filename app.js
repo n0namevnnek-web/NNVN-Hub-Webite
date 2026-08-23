@@ -1410,6 +1410,7 @@ function createPreview(label, index) {
 function createViewStore() {
   const config = window.NNVN_BACKEND || {};
   const enabled = Boolean(config.supabaseUrl && config.supabaseAnonKey);
+  const getViewClient = () => getSupabaseClient();
   const readLocalCount = (id) => Number(localStorage.getItem(`nnvn-demo-view:${id}`) || 0);
   const bumpLocalCount = (id) => {
     const next = readLocalCount(id) + 1;
@@ -1428,19 +1429,17 @@ function createViewStore() {
       }
 
       try {
-        const url = new URL(`${config.supabaseUrl}/rest/v1/script_metrics`);
-        url.searchParams.set("select", "script_id,views");
-        url.searchParams.set("script_id", `in.(${ids.join(",")})`);
-        const response = await fetch(url, {
-          headers: {
-            apikey: config.supabaseAnonKey,
-            Authorization: `Bearer ${config.supabaseAnonKey}`
-          }
-        });
-        if (!response.ok) {
-          throw new Error("View table is not ready yet.");
+        const client = getViewClient();
+        if (!client) {
+          throw new Error("Supabase client is not ready yet.");
         }
-        const rows = await response.json();
+        const { data: rows, error } = await client
+          .from("script_metrics")
+          .select("script_id, views")
+          .in("script_id", ids);
+        if (error) {
+          throw error;
+        }
         rows.forEach((row) => {
           const next = Math.max(Number(row.views) || 0, localCounts[row.script_id] || 0);
           localCounts[row.script_id] = next;
@@ -1463,19 +1462,16 @@ function createViewStore() {
       }
 
       try {
-        const response = await fetch(`${config.supabaseUrl}/rest/v1/rpc/increment_script_view`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: config.supabaseAnonKey,
-            Authorization: `Bearer ${config.supabaseAnonKey}`
-          },
-          body: JSON.stringify({ input_script_id: id })
-        });
-        if (!response.ok) {
-          throw new Error("View counter is not ready yet.");
+        const client = getViewClient();
+        if (!client) {
+          throw new Error("Supabase client is not ready yet.");
         }
-        const value = await response.json();
+        const { data: value, error } = await client.rpc("increment_script_view", {
+          input_script_id: id
+        });
+        if (error) {
+          throw error;
+        }
         const liveCount = Math.max(Number(value) || 0, readLocalCount(id));
         localStorage.setItem(`nnvn-demo-view:${id}`, String(liveCount));
         sessionStorage.setItem(sessionKey(id), "1");
