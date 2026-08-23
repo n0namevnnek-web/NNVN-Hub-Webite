@@ -498,14 +498,10 @@ async function init() {
   bindEvents();
   clearLegacyDemoLogin();
   hydrateCachedAuthProfile();
-  await hydrateAuthUser();
-  bindAuthMemory();
   renderFilters();
   renderScripts();
   renderOverview();
   renderBackendStatus();
-  await hydrateProtectedEntries();
-  renderProtectTable();
   switchProtectView("files");
   uploadPanel?.classList.add("hidden");
 
@@ -513,7 +509,26 @@ async function init() {
     switchTab("protect");
   }
 
-  await hydrateViews();
+  try {
+    await hydrateViews();
+  } catch {
+    renderOverview();
+  }
+
+  try {
+    await hydrateAuthUser();
+    bindAuthMemory();
+  } catch {
+    applyGuestDisplay();
+  }
+
+  try {
+    await hydrateProtectedEntries();
+  } catch {
+    state.protectedEntries = [];
+  }
+
+  renderProtectTable();
 }
 
 function bindEvents() {
