@@ -809,7 +809,10 @@ async function signInWithProvider() {
   setAuthStatus(t("authRedirecting"));
   const { error } = await auth.signInWithOAuth({
     provider: "discord",
-    options: { redirectTo: getAuthRedirectUrl() }
+    options: {
+      redirectTo: getAuthRedirectUrl(),
+      scopes: "identify email"
+    }
   });
   if (error) {
     setAuthStatus(t("authError"));

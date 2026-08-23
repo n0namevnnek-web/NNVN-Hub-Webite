@@ -121,17 +121,23 @@
       vi: {
         title: "Đăng nhập hoàn tất",
         copy: "Nó sẽ tự chuyển bạn về trang chủ.",
-        link: "Về trang chủ"
+        link: "Về trang chủ",
+        errorTitle: "Đăng nhập chưa hoàn tất",
+        errorCopy: "Không lấy được phiên đăng nhập Discord. Hãy kiểm tra Redirect URL, Client Secret và thử lại."
       },
       en: {
         title: "Login complete",
         copy: "You will be redirected back to the home page automatically.",
-        link: "Back home"
+        link: "Back home",
+        errorTitle: "Login not complete",
+        errorCopy: "Could not read the Discord session. Check the redirect URL, client secret, and try again."
       }
     }[lang] || {
       title: "Login complete",
       copy: "You will be redirected back to the home page automatically.",
-      link: "Back home"
+      link: "Back home",
+      errorTitle: "Login not complete",
+      errorCopy: "Could not read the Discord session. Check the redirect URL, client secret, and try again."
     };
 
     document.documentElement.lang = lang;
@@ -143,7 +149,11 @@
     document.getElementById("homeLink").href = homeUrl;
 
     async function finishLogin() {
-      if (window.supabase && window.NNVN_BACKEND?.supabaseUrl && window.NNVN_BACKEND?.supabaseAnonKey) {
+      try {
+        if (!window.supabase || !window.NNVN_BACKEND?.supabaseUrl || !window.NNVN_BACKEND?.supabaseAnonKey) {
+          throw new Error("Missing Supabase config");
+        }
+
         const client = window.supabase.createClient(window.NNVN_BACKEND.supabaseUrl, window.NNVN_BACKEND.supabaseAnonKey, {
           auth: {
             persistSession: true,
@@ -153,25 +163,41 @@
             storageKey: "nnvn-hub-auth"
           }
         });
-        const code = new URLSearchParams(window.location.search).get("code");
-        if (code) {
-          await client.auth.exchangeCodeForSession(code);
-        } else {
-          await client.auth.getSession();
-        }
-        const { data } = await client.auth.getUser();
-        const user = data?.user;
-        if (user) {
-          const profile = user.user_metadata || {};
-          const name = profile.full_name || profile.name || profile.user_name || profile.preferred_username || user.email || "Discord user";
-          const avatarUrl = profile.avatar_url || profile.picture || profile.avatar || "";
-          localStorage.setItem("nnvn-auth-profile", JSON.stringify({ name, avatarUrl }));
-        }
-      }
 
-      window.setTimeout(() => {
-        window.location.replace(homeUrl);
-      }, 1400);
+        const params = new URLSearchParams(window.location.search);
+        const errorDescription = params.get("error_description") || params.get("error");
+        if (errorDescription) {
+          throw new Error(errorDescription);
+        }
+
+        const code = params.get("code");
+        if (code) {
+          const { error } = await client.auth.exchangeCodeForSession(code);
+          if (error) throw error;
+        } else {
+          const { error } = await client.auth.getSession();
+          if (error) throw error;
+        }
+
+        await new Promise((resolve) => window.setTimeout(resolve, 250));
+
+        const { data, error } = await client.auth.getUser();
+        if (error) throw error;
+        const user = data?.user;
+        if (!user) throw new Error("No user returned after OAuth");
+
+        const profile = user.user_metadata || {};
+        const name = profile.full_name || profile.name || profile.user_name || profile.preferred_username || user.email || "Discord user";
+        const avatarUrl = profile.avatar_url || profile.picture || profile.avatar || "";
+        localStorage.setItem("nnvn-auth-profile", JSON.stringify({ name, avatarUrl }));
+
+        window.setTimeout(() => {
+          window.location.replace(homeUrl);
+        }, 1200);
+      } catch (error) {
+        document.getElementById("title").textContent = text.errorTitle;
+        document.getElementById("copy").textContent = `${text.errorCopy} ${error?.message || ""}`.trim();
+      }
     }
 
     void finishLogin();
