@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NNVN Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <video class="bg-video" autoplay muted loop playsinline>
+    <source src="assets/video/furina-loop.mp4" type="video/mp4">
+  </video>
+  <div class="bg-video-overlay"></div>
+  <div class="dashboard-shell">
+    <aside class="sidebar">
+      <div class="sidebar-backdrop"></div>
+      <a class="brand-lockup" href="#" data-tab-target="overview">
+        <span class="brand">NNVN Hub</span>
+        <span class="brand-sub">by N0NAMEVN</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" type="button" data-tab-target="overview">
+          <span class="nav-icon">◈</span>
+          <span data-i18n="navOverview">Tổng quan</span>
+        </button>
+        <button class="nav-item" type="button" data-tab-target="library">
+          <span class="nav-icon">⌘</span>
+          <span data-i18n="navLibrary">Script Library</span>
+        </button>
+        <button class="nav-item" type="button" data-tab-target="protect">
+          <span class="nav-icon">⌥</span>
+          <span data-i18n="navProtect">Protect Script</span>
+        </button>
+        <button class="nav-item" type="button" data-tab-target="lifetime">
+          <span class="nav-icon">✦</span>
+          <span data-i18n="navLifetime">Premium</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer user-card">
+        <div class="user-avatar">N</div>
+        <div class="user-info">
+          <p class="sidebar-label" data-i18n="userLabel">Tài khoản</p>
+          <p class="user-name" id="sidebarUserName">n0namevn</p>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-panel">
+      <header class="topbar-app">
+        <div>
+          <p class="eyebrow" data-i18n="appEyebrow">Dashboard</p>
+          <h1 id="pageTitle" data-i18n="overviewHeading">NNVN Hub Dashboard</h1>
+        </div>
+        <div class="topbar-actions">
+          <span class="backend-status" id="backendStatus" data-i18n="backendDemo">View demo</span>
+          <button class="button button-secondary auth-open" type="button" id="openAuthButton" data-i18n="authOpen">Đăng nhập / Đăng kí</button>
+          <div class="lang-switch" aria-label="Language switch">
+            <button class="lang-btn active" data-lang="vi" type="button">VI</button>
+            <button class="lang-btn" data-lang="en" type="button">EN</button>
+          </div>
+        </div>
+      </header>
+
+      <section class="page-section active" data-tab-panel="overview">
+        <div class="overview-grid">
+          <article class="glass stat-card">
+            <span class="stat-label" data-i18n="statScripts">Tổng script</span>
+            <strong class="stat-value" id="totalScripts">0</strong>
+          </article>
+          <article class="glass stat-card">
+            <span class="stat-label" data-i18n="statViews">Tổng lượt xem</span>
+            <strong class="stat-value" id="totalViews">0</strong>
+          </article>
+          <article class="glass stat-card trending-card">
+            <span class="stat-label" data-i18n="statPopular">Đang thịnh hành</span>
+            <img class="trending-thumb" id="popularScriptImage" src="" alt="">
+            <strong class="stat-value" id="popularScript">-</strong>
+          </article>
+        </div>
+
+        <div class="glass welcome-panel">
+          <div>
+            <p class="eyebrow" data-i18n="welcomeEyebrow">Workspace</p>
+            <h2 data-i18n="welcomeTitle">Quản lý thư viện script, view thật và giao diện protect tại một nơi.</h2>
+            <p class="section-copy" data-i18n="welcomeCopy">
+              Mình đã chuẩn bị sẵn khung backend free để bạn có thể chuyển từ view mẫu sang view thật.
+              Danh sách script hiện hiển thị theo tên bạn đưa, còn phần mã thực thi mình không nhúng trực tiếp vào web.
+            </p>
+          </div>
+          <div class="welcome-actions">
+            <button class="button button-primary" type="button" data-tab-target="library" data-i18n="openLibrary">Mở thư viện</button>
+            <button class="button button-secondary" type="button" data-tab-target="protect" data-i18n="openProtect">Mở Protect Script</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="page-section" data-tab-panel="library">
+        <div class="section-header-row">
+          <div>
+            <h2 data-i18n="libraryHeading">Script Library</h2>
+            <p class="section-copy" data-i18n="librarySubcopy">Text sáng hơn, chỉ giữ bộ lọc All và có sắp xếp thật với view thật khi bạn nối backend.</p>
+          </div>
+          <button class="button button-primary" type="button" data-tab-target="protect" data-i18n="uploadScript">Upload Script</button>
+        </div>
+
+        <div class="glass toolbar-panel">
+          <div class="toolbar-row">
+            <label class="search-field">
+              <span data-i18n="searchLabel">Tìm kiếm</span>
+              <input id="searchInput" type="search" data-i18n-placeholder="searchPlaceholder" placeholder="Tìm script...">
+            </label>
+            <div class="toolbar-selects">
+              <label class="select-field">
+                <span data-i18n="timeLabel">Phạm vi</span>
+                <select id="timeSelect">
+                  <option value="all" data-i18n="timeAll">All Time</option>
+                </select>
+              </label>
+              <label class="select-field">
+                <span data-i18n="sortLabel">Sắp xếp</span>
+                <select id="sortSelect">
+                  <option value="newest" data-i18n="sortNewest">Mới nhất</option>
+                  <option value="oldest" data-i18n="sortOldest">Cũ nhất</option>
+                  <option value="popular" data-i18n="sortPopular">Thịnh hành nhất</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="filters" id="filters"></div>
+        </div>
+
+        <div class="card-grid" id="scriptGrid"></div>
+      </section>
+
+      <section class="page-section" data-tab-panel="protect">
+        <div class="section-header-row">
+          <div>
+            <h2 data-i18n="protectHeading">Protect Script</h2>
+            <p class="section-copy" data-i18n="protectSubcopy">Mặc định là danh sách script đã đăng. Bấm Upload Script để mở form tạo mục protected mới.</p>
+          </div>
+          <button class="button button-primary" type="button" id="openUploadButton" data-i18n="uploadScript">Upload Script</button>
+        </div>
+
+        <div class="glass protect-files-panel">
+          <div class="protect-toolbar">
+            <div class="mode-tabs compact-tabs">
+              <button class="mode-tab active" type="button" data-protect-view="files">
+                <span class="nav-icon">⌘</span>
+                <span data-i18n="filesTab">Files</span>
+              </button>
+              <button class="mode-tab" type="button" data-protect-view="analytics">
+                <span class="nav-icon">◔</span>
+                <span data-i18n="analyticsTab">Analytics</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="protect-list-view active" data-protect-panel="files">
+            <div class="protect-list-head">
+              <label class="search-field">
+                <span data-i18n="searchLabel">Tìm kiếm</span>
+                <input id="protectSearchInput" type="search" data-i18n-placeholder="searchPlaceholder" placeholder="Tìm script...">
+              </label>
+              <div class="toolbar-selects">
+                <label class="select-field">
+                  <span data-i18n="timeLabel">Phạm vi</span>
+                  <select id="protectTimeSelect">
+                    <option value="all" data-i18n="timeAll">All Time</option>
+                  </select>
+                </label>
+                <label class="select-field">
+                  <span data-i18n="sortLabel">Sắp xếp</span>
+                  <select id="protectSortSelect">
+                    <option value="newest" data-i18n="sortNewest">Mới nhất</option>
+                    <option value="oldest" data-i18n="sortOldest">Cũ nhất</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <div class="protect-table-wrap">
+              <table class="protect-table">
+                <thead>
+                  <tr>
+                    <th data-i18n="tableName">Name</th>
+                    <th data-i18n="tableSize">Size</th>
+                    <th data-i18n="tableExec">Executions</th>
+                    <th data-i18n="tableUploaded">Uploaded</th>
+                    <th data-i18n="tableActions">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="protectTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="protect-list-view" data-protect-panel="analytics">
+            <div class="result-box">
+              <p data-i18n="analyticsHint">Analytics hiện đang hiển thị số lần mở link protected trong web này.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="upload-modal hidden" id="uploadPanel" aria-hidden="true">
+          <form class="glass protect-editor upload-modal-card" id="vaultForm">
+            <button class="modal-x" type="button" id="closeUploadX" aria-label="Close">×</button>
+            <div class="upload-modal-head">
+              <div>
+                <h3 id="uploadModalTitle" data-i18n="uploadModalTitle">Upload Script</h3>
+                <p class="section-copy" data-i18n="uploadModalCopy">Host your script and manage it inside NNVN Hub.</p>
+              </div>
+            </div>
+            <div class="mode-tabs">
+              <button class="mode-tab active" type="button" data-mode="paste">
+                <span class="nav-icon">⌘</span>
+                <span data-i18n="modePaste">Paste Code</span>
+              </button>
+              <button class="mode-tab" type="button" data-mode="upload">
+                <span class="nav-icon">⇪</span>
+                <span data-i18n="modeUpload">Upload File</span>
+              </button>
+            </div>
+
+            <div class="mode-panel active" data-mode-panel="paste">
+              <label class="editor-label">
+                <span data-i18n="editorTitleLabel">Tiêu đề</span>
+                <input id="scriptName" name="scriptName" type="text" data-i18n-placeholder="titlePlaceholder" placeholder="e.g. My Admin Script">
+              </label>
+
+              <label class="editor-label">
+                <span data-i18n="editorLabel">Script</span>
+                <textarea id="scriptBody" name="scriptBody" rows="14" data-i18n-placeholder="editorPlaceholder" placeholder="print(&quot;Hello, world!&quot;)" required></textarea>
+              </label>
+            </div>
+
+            <div class="mode-panel" data-mode-panel="upload">
+              <label class="upload-box">
+                <input id="scriptFile" type="file" accept=".txt,.lua,.luau">
+                <span data-i18n="uploadHint">Chọn file .lua hoặc .luau để điền vào form.</span>
+              </label>
+            </div>
+
+            <div class="inline-actions">
+              <button class="button button-primary" type="submit" data-i18n="formSubmit">Tạo trang protected</button>
+              <button class="button button-secondary" type="button" id="closeUploadButton" data-i18n="closeUpload">Đóng</button>
+              <span class="validation-message" id="validationMessage"></span>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="page-section" data-tab-panel="lifetime">
+        <div class="section-header-row">
+          <div>
+            <h2 data-i18n="lifetimeHeading">Premium</h2>
+            <p class="section-copy" data-i18n="lifetimeSubcopy">Phần này vẫn chỉ là menu giao diện, chưa có chức năng thanh toán hay cấp key.</p>
+          </div>
+        </div>
+
+        <div class="premium-tabs mode-tabs">
+          <button class="mode-tab active" type="button" data-premium-section="lifetime-key">
+            <span class="nav-icon">✦</span>
+            <span>Lifetime Key</span>
+          </button>
+          <button class="mode-tab" type="button" data-premium-section="web-plus">
+            <span class="nav-icon">✧</span>
+            <span>NNVN Hub Web Plus</span>
+          </button>
+        </div>
+
+        <div class="premium-panel active" data-premium-panel="lifetime-key">
+          <div class="lifetime-grid payment-grid">
+            <article class="glass lifetime-card payment-card">
+              <p class="eyebrow">LIFETIME KEY</p>
+              <h3 data-i18n="lifetimeKeyTitle">Lifetime Key</h3>
+              <div class="payment-toggle" role="group" aria-label="Payment method">
+                <button class="mode-tab payment-method active" type="button" data-payment-method="paypal">
+                  <img src="assets/images/paypal-icon.png" alt="" aria-hidden="true">
+                  <span>Paypal</span>
+                </button>
+                <button class="mode-tab payment-method" type="button" data-payment-method="bank">
+                  <img src="assets/images/bank-icon.png" alt="" aria-hidden="true">
+                  <span>Bank Account (VND)</span>
+                </button>
+              </div>
+              <div class="payment-panel active" data-payment-panel="paypal">
+                <p class="payment-line"><span>Paypal</span><strong>n0namevnnek@gmail.com</strong></p>
+              </div>
+              <div class="payment-panel" data-payment-panel="bank">
+                <p class="payment-line"><span>MB Bank</span><strong>0797031513</strong></p>
+                <img class="payment-qr" src="assets/images/payment-qr.png" alt="MB Bank payment QR">
+              </div>
+            </article>
+            <article class="glass lifetime-card muted-card">
+              <p class="eyebrow" data-i18n="afterPayTitle">Sau khi chuyển tiền</p>
+              <p class="section-copy" data-i18n="afterPayCopy">Liên hệ Discord @n0namevnnek hoặc Zalo 0797031513. Gửi kèm bill chuyển tiền và tên tài khoản Discord của bạn hoặc KEY bạn muốn đặt.</p>
+            </article>
+          </div>
+        </div>
+
+        <div class="premium-panel" data-premium-panel="web-plus">
+          <article class="glass lifetime-card web-plus-card">
+            <p class="eyebrow">NNVN HUB WEB PLUS</p>
+            <h3>NNVN Hub Web Plus</h3>
+            <p class="section-copy" data-i18n="webPlusComingSoon">Coming soon.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="auth-modal" id="authModal">
+    <form class="glass auth-card" method="dialog">
+      <button class="modal-x" value="cancel" aria-label="Close">×</button>
+      <h3 data-i18n="authTitle">Đăng nhập / Đăng kí</h3>
+      <label class="editor-label">
+        <span>Email</span>
+        <input id="authEmail" type="email" placeholder="you@example.com">
+      </label>
+      <button class="button button-primary" type="button" id="emailLoginButton" data-i18n="emailLogin">Tiếp tục bằng Email</button>
+      <div class="auth-divider">or</div>
+      <button class="button button-secondary oauth-button" type="button" data-oauth-provider="google">
+        <img src="assets/images/google-icon.png" alt="" aria-hidden="true">
+        <span>Google</span>
+      </button>
+      <button class="button button-secondary oauth-button" type="button" data-oauth-provider="discord">
+        <img src="assets/images/discord-icon.png" alt="" aria-hidden="true">
+        <span>Discord</span>
+      </button>
+      <p class="section-copy auth-note" data-i18n="authNote">Khi nối Supabase Auth, Discord sẽ trả về tên và avatar để hiển thị ở menu trái.</p>
+    </form>
+  </dialog>
+
+  <dialog class="script-modal" id="scriptModal">
+    <div class="modal-card glass">
+      <button class="modal-close" id="modalClose" aria-label="Close">×</button>
+      <div class="modal-media" id="modalMedia"></div>
+      <div class="modal-content simple-modal">
+        <h3 id="modalTitle"></h3>
+        <div class="meta-row">
+          <span class="meta-pill" id="modalViews"></span>
+          <span class="meta-pill" id="modalDate"></span>
+        </div>
+        <pre id="modalCode"></pre>
+        <div class="hero-actions">
+          <button class="button button-primary" id="copyCodeButton" type="button" data-i18n="copyButton">Sao chép script</button>
+          <a class="button button-secondary" href="protected.html" data-i18n="previewProtect">Xem trang protect</a>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="backend-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
