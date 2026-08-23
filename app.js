@@ -656,6 +656,8 @@ function bindEvents() {
     }
 
     await navigator.clipboard.writeText(state.selectedScript.code);
+    await incrementView(state.selectedScript);
+    modalViews.textContent = `${formatNumber(state.selectedScript.views)} ${t("viewsLabel")}`;
     copyCodeButton.textContent = t("copied");
     window.setTimeout(() => {
       copyCodeButton.textContent = t("copyButton");
@@ -1028,8 +1030,7 @@ function renderScripts() {
         </div>
       </div>
     `;
-    article.addEventListener("click", async () => {
-      await incrementView(item);
+    article.addEventListener("click", () => {
       openModal(item);
     });
     scriptGrid.appendChild(article);
