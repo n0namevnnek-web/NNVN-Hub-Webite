@@ -384,7 +384,7 @@ const scripts = [
     createdAt: "2026-08-23",
     views: 0,
     popularity: 0,
-    image: "assets/images/get-fat-to-break-tape.png",
+    image: "assets/images/get-fat-to-break-tape-new.png",
     code: ""
   },
   {
@@ -393,7 +393,7 @@ const scripts = [
     createdAt: "2026-08-23",
     views: 0,
     popularity: 0,
-    image: "assets/images/the-strongest-battleground.png",
+    image: "assets/images/the-strongest-battleground-new.png",
     code: ""
   },
   {
@@ -402,7 +402,7 @@ const scripts = [
     createdAt: "2026-08-23",
     views: 0,
     popularity: 0,
-    image: "assets/images/forsaken.png",
+    image: "assets/images/forsaken-new.png",
     code: ""
   }
 ].map((item) => ({
@@ -484,6 +484,7 @@ void init();
 async function init() {
   setLanguage(state.lang, false);
   bindEvents();
+  clearLegacyDemoLogin();
   await hydrateAuthUser();
   renderFilters();
   renderScripts();
@@ -831,6 +832,10 @@ async function hydrateAuthUser() {
   if (!user) return;
   const profile = user.user_metadata || {};
   setSidebarUser(profile.full_name || profile.name || user.email || "NNVN user", profile.avatar_url || "");
+}
+
+function clearLegacyDemoLogin() {
+  localStorage.removeItem("nnvn-local-user");
 }
 
 function setAuthStatus(message) {
