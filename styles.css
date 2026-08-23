@@ -996,15 +996,24 @@ h2 {
   margin-bottom: 1rem;
 }
 
+.code-label {
+  margin: 0 0 0.45rem;
+  color: var(--accent);
+  font-weight: 650;
+}
+
 .modal-content pre {
   max-height: 18rem;
   overflow: auto;
   padding: 1rem;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(5, 7, 13, 0.88);
+  border: 1px solid rgba(255, 226, 174, 0.2);
   color: var(--text-strong);
   white-space: pre-wrap;
+  font-family: "Courier New", monospace;
+  font-size: 0.88rem;
+  line-height: 1.55;
 }
 
 .modal-close {
@@ -1078,6 +1087,10 @@ h2 {
 }
 
 #modalCode:empty {
+  display: none;
+}
+
+.code-label:has(+ #modalCode:empty) {
   display: none;
 }
 

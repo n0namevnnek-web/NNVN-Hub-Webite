@@ -403,7 +403,7 @@ const scripts = [
   }
 ].map((item) => ({
   ...item,
-  tags: [translations.en.externalTag],
+  tags: [translations.vi.externalTag],
   description: {
     vi: "Thư viện chính thức của NNVN Hub cho game này.",
     en: "Official NNVN Hub library entry for this game."
@@ -411,7 +411,7 @@ const scripts = [
 }));
 
 const state = {
-  lang: localStorage.getItem("nnvn-lang") || "en",
+  lang: localStorage.getItem("nnvn-lang") || "vi",
   query: "",
   sort: "newest",
   selectedScript: null,
@@ -444,6 +444,7 @@ const modalTitle = document.getElementById("modalTitle");
 const modalViews = document.getElementById("modalViews");
 const modalDate = document.getElementById("modalDate");
 const modalCode = document.getElementById("modalCode");
+const modalCodeLabel = document.getElementById("modalCodeLabel");
 const modalMedia = document.getElementById("modalMedia");
 const copyCodeButton = document.getElementById("copyCodeButton");
 const vaultForm = document.getElementById("vaultForm");
@@ -1006,6 +1007,9 @@ function openModal(item) {
   modalViews.textContent = `${formatNumber(item.views)} ${t("viewsLabel")}`;
   modalDate.textContent = formatDate(item.createdAt);
   modalCode.textContent = item.code;
+  if (modalCodeLabel) {
+    modalCodeLabel.style.display = item.code ? "block" : "none";
+  }
   modalMedia.innerHTML = `<img src="${item.image}" alt="${escapeHtml(item.title)}">`;
   copyCodeButton.textContent = t("copyButton");
   copyCodeButton.style.display = item.code ? "inline-flex" : "none";
