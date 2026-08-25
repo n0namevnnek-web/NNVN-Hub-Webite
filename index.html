@@ -27,13 +27,17 @@
           <span class="nav-icon">◈</span>
           <span data-i18n="navOverview">Tổng quan</span>
         </button>
-        <button class="nav-item" type="button" data-tab-target="library">
+        <button class="nav-item" type="button" data-tab-target="search">
           <span class="nav-icon">⌘</span>
+          <span data-i18n="navSearch">Search Script</span>
+        </button>
+        <button class="nav-item" type="button" data-tab-target="library">
+          <span class="nav-icon">◫</span>
           <span data-i18n="navLibrary">Script Library</span>
         </button>
         <button class="nav-item" type="button" data-tab-target="protect">
           <span class="nav-icon">⌥</span>
-          <span data-i18n="navProtect">Protect Script</span>
+          <span data-i18n="navProtect">Lua Protect</span>
         </button>
         <button class="nav-item" type="button" data-tab-target="lifetime">
           <span class="nav-icon">✦</span>
@@ -101,19 +105,42 @@
             </p>
           </div>
           <div class="welcome-actions">
-            <button class="button button-primary" type="button" data-tab-target="library" data-i18n="openLibrary">Mở thư viện</button>
-            <button class="button button-secondary" type="button" data-tab-target="protect" data-i18n="openProtect">Mở Protect Script</button>
+            <button class="button button-primary" type="button" data-tab-target="search" data-i18n="openSearch">Open Script Hub</button>
+            <button class="button button-secondary" type="button" data-tab-target="library" data-i18n="openLibrary">Open Script Library</button>
+            <button class="button button-secondary" type="button" data-tab-target="protect" data-i18n="openProtect">Open Lua Protect</button>
           </div>
         </div>
       </section>
 
-      <section class="page-section" data-tab-panel="library">
+      <section class="page-section" data-tab-panel="search">
         <div class="section-header-row">
           <div>
-            <h2 data-i18n="libraryHeading">Script Library</h2>
-            <p class="section-copy" data-i18n="librarySubcopy">Text sáng hơn, chỉ giữ bộ lọc All và có sắp xếp thật với view thật khi bạn nối backend.</p>
+            <h2 data-i18n="searchHeading">Search Script</h2>
+            <p class="section-copy" data-i18n="searchSubcopy">Browse the Script Hub, search games instantly, and open each script card for preview and copy.</p>
           </div>
           <button class="button button-primary" type="button" data-tab-target="protect" data-i18n="uploadScript">Upload Script</button>
+        </div>
+
+        <div class="glass hub-hero">
+          <div class="hub-hero-copy">
+            <p class="eyebrow">SCRIPT HUB</p>
+            <h3 data-i18n="hubHeroTitle">Fast search, clean previews, and one place for every published script.</h3>
+            <p class="section-copy" data-i18n="hubHeroCopy">Inspired by the Script Hub flow from the reference website, but rebuilt around your own cards, backend, and protected script flow.</p>
+          </div>
+          <div class="hub-hero-grid">
+            <article class="hub-mini-card">
+              <span class="hub-mini-label">Search</span>
+              <strong>Instant game lookup</strong>
+            </article>
+            <article class="hub-mini-card">
+              <span class="hub-mini-label">Preview</span>
+              <strong>Image + loadstring modal</strong>
+            </article>
+            <article class="hub-mini-card">
+              <span class="hub-mini-label">Hub</span>
+              <strong>Sorted by newest or popular</strong>
+            </article>
+          </div>
         </div>
 
         <div class="glass toolbar-panel">
@@ -145,13 +172,102 @@
         <div class="card-grid" id="scriptGrid"></div>
       </section>
 
+      <section class="page-section" data-tab-panel="library">
+        <div class="section-header-row">
+          <div>
+            <h2 data-i18n="libraryHeading">Script Library</h2>
+            <p class="section-copy" data-i18n="librarySubcopy">This is your own script library with your real loadstrings, your game covers, and your own published entries.</p>
+          </div>
+          <button class="button button-primary" type="button" data-tab-target="protect" data-i18n="uploadScript">Upload Script</button>
+        </div>
+
+        <div class="glass hub-hero library-hero">
+          <div class="hub-hero-copy">
+            <p class="eyebrow">NNVN LIBRARY</p>
+            <h3 data-i18n="libraryHeroTitle">Your own script collection, separate from the external search hub.</h3>
+            <p class="section-copy" data-i18n="libraryHeroCopy">This tab is reserved for your official NNVN Hub scripts, while Search Script stays as the external-style browsing area.</p>
+          </div>
+          <div class="hub-hero-grid">
+            <article class="hub-mini-card">
+              <span class="hub-mini-label">Official</span>
+              <strong>Your own loadstrings</strong>
+            </article>
+            <article class="hub-mini-card">
+              <span class="hub-mini-label">Library</span>
+              <strong>Published NNVN entries</strong>
+            </article>
+            <article class="hub-mini-card">
+              <span class="hub-mini-label">Manage</span>
+              <strong>Sorted and previewable</strong>
+            </article>
+          </div>
+        </div>
+
+        <div class="glass toolbar-panel">
+          <div class="toolbar-row">
+            <label class="search-field">
+              <span data-i18n="searchLabel">Tìm kiếm</span>
+              <input id="librarySearchInput" type="search" data-i18n-placeholder="searchPlaceholder" placeholder="Tìm script...">
+            </label>
+            <div class="toolbar-selects">
+              <label class="select-field">
+                <span data-i18n="timeLabel">Phạm vi</span>
+                <select id="libraryTimeSelect">
+                  <option value="all" data-i18n="timeAll">All Time</option>
+                </select>
+              </label>
+              <label class="select-field">
+                <span data-i18n="sortLabel">Sắp xếp</span>
+                <select id="librarySortSelect">
+                  <option value="newest" data-i18n="sortNewest">Mới nhất</option>
+                  <option value="oldest" data-i18n="sortOldest">Cũ nhất</option>
+                  <option value="popular" data-i18n="sortPopular">Thịnh hành nhất</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="filters" id="libraryFilters"></div>
+        </div>
+
+        <div class="card-grid" id="libraryGrid"></div>
+      </section>
+
       <section class="page-section" data-tab-panel="protect">
         <div class="section-header-row">
           <div>
-            <h2 data-i18n="protectHeading">Protect Script</h2>
-            <p class="section-copy" data-i18n="protectSubcopy">Mặc định là danh sách script đã đăng. Bấm Upload Script để mở form tạo mục protected mới.</p>
+            <h2 data-i18n="protectHeading">Lua Protect</h2>
+            <p class="section-copy" data-i18n="protectSubcopy">A Lua Protect gateway inspired by the reference site, while keeping your own login flow, protected storage, and Furina background.</p>
           </div>
           <button class="button button-primary" type="button" id="openUploadButton" data-i18n="uploadScript">Upload Script</button>
+        </div>
+
+        <div class="protect-showcase">
+          <article class="glass protect-hero-card">
+            <p class="eyebrow">LUA PROTECT</p>
+            <h3 data-i18n="protectHeroTitle">Protect, host, and manage your Luau files from one clean gateway.</h3>
+            <p class="section-copy" data-i18n="protectHeroCopy">This area is styled from the reference website's protection section, but remains connected to your own protected pages, Discord login, and saved file list.</p>
+            <div class="hero-actions">
+              <button class="button button-primary" type="button" id="openUploadButtonHero" data-i18n="uploadScript">Upload Script</button>
+              <a class="button button-secondary" href="protected.html" data-i18n="previewProtect">View protect page</a>
+            </div>
+          </article>
+          <div class="protect-feature-grid">
+            <article class="glass protect-feature-card">
+              <span class="protect-feature-icon">◈</span>
+              <h4 data-i18n="protectFeatureOneTitle">Gateway Control</h4>
+              <p data-i18n="protectFeatureOneCopy">Keep every protected entry in one dashboard with edit, delete, and quick protected-link copy.</p>
+            </article>
+            <article class="glass protect-feature-card">
+              <span class="protect-feature-icon">⌁</span>
+              <h4 data-i18n="protectFeatureTwoTitle">Lua Upload Flow</h4>
+              <p data-i18n="protectFeatureTwoCopy">Paste code or upload files, validate quickly, and save them locally or through Supabase.</p>
+            </article>
+            <article class="glass protect-feature-card">
+              <span class="protect-feature-icon">✦</span>
+              <h4 data-i18n="protectFeatureThreeTitle">Protected Delivery</h4>
+              <p data-i18n="protectFeatureThreeCopy">Each script can generate its own protected page, ready to share without exposing the whole dashboard.</p>
+            </article>
+          </div>
         </div>
 
         <div class="glass protect-files-panel">

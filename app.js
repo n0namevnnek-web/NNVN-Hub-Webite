@@ -1,14 +1,16 @@
 const translations = {
   vi: {
     navOverview: "Tổng quan",
+    navSearch: "Search Script",
     navLibrary: "Script Library",
-    navProtect: "Protect Script",
+    navProtect: "Lua Protect",
     navLifetime: "Premium",
     footerLabel: "Đường dẫn dự án",
     appEyebrow: "Dashboard",
     overviewHeading: "NNVN Hub Dashboard",
+    searchHeading: "Search Script",
     libraryHeading: "Script Library",
-    protectHeading: "Protect Script",
+    protectHeading: "Lua Protect",
     lifetimeHeading: "Premium",
     statScripts: "Tổng script",
     statViews: "Tổng lượt xem",
@@ -20,9 +22,15 @@ const translations = {
     welcomeEyebrow: "Workspace",
     welcomeTitle: "NNVN Hub dành cho script Roblox, protect page và Premium.",
     welcomeCopy: "Tìm script nhanh, xem hình game rõ ràng, quản lý protect script theo tài khoản Discord và mở rộng Premium khi cần.",
-    openLibrary: "Mở thư viện",
-    openProtect: "Mở Protect Script",
-    librarySubcopy: "Text sáng hơn, chỉ giữ bộ lọc All và có sắp xếp thật với view thật khi bạn nối backend.",
+    openSearch: "Mở Script Hub",
+    openLibrary: "Mở Script Library",
+    openProtect: "Mở Lua Protect",
+    searchSubcopy: "Duyệt Script Hub, tìm game thật nhanh, rồi mở từng card để xem trước và sao chép.",
+    hubHeroTitle: "Tìm nhanh, xem rõ, và gom mọi script public vào một chỗ.",
+    hubHeroCopy: "Phần này lấy cảm hứng từ Script Hub của website tham khảo nhưng được dựng lại theo dữ liệu, thẻ game và modal của riêng NNVN Hub.",
+    librarySubcopy: "Đây là thư viện script chính của bạn với loadstring thật, ảnh game riêng và các mục do NNVN Hub phát hành.",
+    libraryHeroTitle: "Kho script chính chủ của bạn, tách riêng khỏi tab Search Script.",
+    libraryHeroCopy: "Tab này dành cho script chính thức của NNVN Hub, còn Search Script giữ vai trò như khu duyệt nguồn ngoài để tham khảo.",
     uploadScript: "Upload Script",
     uploadModalTitle: "Upload Script",
     editModalTitle: "Edit Script",
@@ -52,7 +60,15 @@ const translations = {
     viewsLabel: "lượt xem",
     uploadedLabel: "Đăng",
     noMatch: "Không có script nào khớp với tìm kiếm của bạn.",
-    protectSubcopy: "Mặc định là danh sách script đã đăng. Bấm Upload Script để mở form tạo mục protected mới.",
+    protectSubcopy: "Một khu Lua Protect lấy cảm hứng từ website tham khảo, nhưng vẫn giữ login, nền và hệ protected riêng của bạn.",
+    protectHeroTitle: "Protect, host, and manage your Luau files from one clean gateway.",
+    protectHeroCopy: "Khu này mô phỏng cảm giác của Lua Protect trong website tham khảo, nhưng vẫn nối thẳng với protected page và kho script của riêng bạn.",
+    protectFeatureOneTitle: "Gateway Control",
+    protectFeatureOneCopy: "Quản lý toàn bộ file protected trong một dashboard với copy link, sửa và xóa nhanh.",
+    protectFeatureTwoTitle: "Lua Upload Flow",
+    protectFeatureTwoCopy: "Paste code hoặc upload file, kiểm tra nhanh rồi lưu local hoặc lưu bằng Supabase.",
+    protectFeatureThreeTitle: "Protected Delivery",
+    protectFeatureThreeCopy: "Mỗi script có thể tạo trang protected riêng để chia sẻ mà không lộ toàn bộ dashboard.",
     filesTab: "Files",
     analyticsTab: "Analytics",
     modePaste: "Paste Code",
@@ -106,14 +122,16 @@ const translations = {
   },
   en: {
     navOverview: "Overview",
+    navSearch: "Search Script",
     navLibrary: "Script Library",
-    navProtect: "Protect Script",
+    navProtect: "Lua Protect",
     navLifetime: "Premium",
     footerLabel: "Project path",
     appEyebrow: "Dashboard",
     overviewHeading: "NNVN Hub Dashboard",
+    searchHeading: "Search Script",
     libraryHeading: "Script Library",
-    protectHeading: "Protect Script",
+    protectHeading: "Lua Protect",
     lifetimeHeading: "Premium",
     statScripts: "Total scripts",
     statViews: "Total views",
@@ -125,9 +143,15 @@ const translations = {
     welcomeEyebrow: "Workspace",
     welcomeTitle: "NNVN Hub for Roblox scripts, protect pages, and Premium.",
     welcomeCopy: "Find scripts faster, preview each game clearly, manage protected scripts per Discord account, and expand into Premium when ready.",
-    openLibrary: "Open Library",
-    openProtect: "Open Protect Script",
-    librarySubcopy: "Brighter text, only the All filter, and real sorting with live views once the backend is connected.",
+    openSearch: "Open Script Hub",
+    openLibrary: "Open Script Library",
+    openProtect: "Open Lua Protect",
+    searchSubcopy: "Browse the Script Hub, search games instantly, and open each script card for preview and copy.",
+    hubHeroTitle: "Fast search, clean previews, and one place for every published script.",
+    hubHeroCopy: "Inspired by the Script Hub flow from the reference website, but rebuilt around your own cards, backend, and protected script flow.",
+    librarySubcopy: "This is your own script library with your real loadstrings, your game covers, and your own published entries.",
+    libraryHeroTitle: "Your own script collection, separate from the external search hub.",
+    libraryHeroCopy: "This tab is reserved for your official NNVN Hub scripts, while Search Script stays as the external-style browsing area.",
     uploadScript: "Upload Script",
     uploadModalTitle: "Upload Script",
     editModalTitle: "Edit Script",
@@ -157,7 +181,15 @@ const translations = {
     viewsLabel: "views",
     uploadedLabel: "Uploaded",
     noMatch: "No scripts match your search.",
-    protectSubcopy: "The default view is the uploaded script list. Click Upload Script to open the protected upload form.",
+    protectSubcopy: "A Lua Protect gateway inspired by the reference website, while keeping your own login flow, background, and protected storage.",
+    protectHeroTitle: "Protect, host, and manage your Luau files from one clean gateway.",
+    protectHeroCopy: "This area follows the spirit of the reference site's Lua Protect section while staying connected to your own protected pages and saved files.",
+    protectFeatureOneTitle: "Gateway Control",
+    protectFeatureOneCopy: "Keep every protected entry in one dashboard with edit, delete, and quick protected-link copy.",
+    protectFeatureTwoTitle: "Lua Upload Flow",
+    protectFeatureTwoCopy: "Paste code or upload files, validate quickly, and save them locally or through Supabase.",
+    protectFeatureThreeTitle: "Protected Delivery",
+    protectFeatureThreeCopy: "Each script can generate its own protected page, ready to share without exposing the whole dashboard.",
     filesTab: "Files",
     analyticsTab: "Analytics",
     modePaste: "Paste Code",
@@ -211,7 +243,7 @@ const translations = {
   }
 };
 
-const scripts = [
+const libraryScripts = [
   {
     id: "heavyweight-fishing",
     title: "Heavyweight Fishing Script",
@@ -421,17 +453,106 @@ const scripts = [
   }
 ].map((item) => ({
   ...item,
-  tags: [translations.vi.externalTag],
+  tags: ["NNVN Hub", "Official"],
   description: {
     vi: "Thư viện chính thức của NNVN Hub cho game này.",
     en: "Official NNVN Hub library entry for this game."
   }
 }));
 
+const searchScripts = [
+  {
+    id: "search-heavyweight-fishing",
+    title: "Heavyweight Fishing",
+    createdAt: "2026-08-23",
+    views: 0,
+    popularity: 0,
+    image: "assets/images/heavyweight-fishing.png",
+    code: "",
+    tags: ["External Hub", "Search Script"],
+    description: {
+      vi: "Mục duyệt kiểu nguồn ngoài để tham khảo game và giao diện Script Hub.",
+      en: "External-style browsing entry inspired by a separate script hub source."
+    }
+  },
+  {
+    id: "search-forsaken",
+    title: "Forsaken",
+    createdAt: "2026-08-23",
+    views: 0,
+    popularity: 0,
+    image: "assets/images/forsaken-new.png",
+    code: "",
+    tags: ["External Hub", "Search Script"],
+    description: {
+      vi: "Bản xem trước từ khu Search Script, tách riêng khỏi Script Library chính của bạn.",
+      en: "A Search Script preview entry kept separate from your main Script Library."
+    }
+  },
+  {
+    id: "search-final-swarm",
+    title: "Final Swarm",
+    createdAt: "2026-08-23",
+    views: 0,
+    popularity: 0,
+    image: "assets/images/final-swarm.png",
+    code: "",
+    tags: ["External Hub", "Search Script"],
+    description: {
+      vi: "Khu Search Script chuyên để duyệt nhanh game và ảnh đại diện kiểu hub bên ngoài.",
+      en: "Search Script focuses on quick browsing with game art and external hub styling."
+    }
+  },
+  {
+    id: "search-bee-swarm",
+    title: "Bee Swarm Simulator",
+    createdAt: "2026-08-23",
+    views: 0,
+    popularity: 0,
+    image: "assets/images/bee-swarm-simulator.png",
+    code: "",
+    tags: ["External Hub", "Search Script"],
+    description: {
+      vi: "Mục tham khảo để tìm nhanh script/game ở tab Search Script.",
+      en: "Reference-style card for fast game discovery in the Search Script tab."
+    }
+  },
+  {
+    id: "search-meme-sea",
+    title: "Meme Sea",
+    createdAt: "2026-08-23",
+    views: 0,
+    popularity: 0,
+    image: "assets/images/meme-sea.png",
+    code: "",
+    tags: ["External Hub", "Search Script"],
+    description: {
+      vi: "Card demo cho khu Search Script lấy cảm hứng từ website khác.",
+      en: "Demo card for the Search Script area inspired by a different website."
+    }
+  },
+  {
+    id: "search-speed-vs-giant",
+    title: "Speed vs Giant",
+    createdAt: "2026-08-23",
+    views: 0,
+    popularity: 0,
+    image: "assets/images/speed-vs-giant.png",
+    code: "",
+    tags: ["External Hub", "Search Script"],
+    description: {
+      vi: "Search Script dùng để duyệt nguồn ngoài, không phải thư viện loadstring chính của bạn.",
+      en: "Search Script is for external-style browsing, not your main loadstring library."
+    }
+  }
+];
+
 const state = {
   lang: localStorage.getItem("nnvn-lang") || "vi",
   query: "",
   sort: "newest",
+  libraryQuery: "",
+  librarySort: "newest",
   selectedScript: null,
   activeTab: "overview",
   viewsHydrated: false,
@@ -454,10 +575,14 @@ const navItems = [...document.querySelectorAll(".nav-item")];
 const pageTitle = document.getElementById("pageTitle");
 const searchInput = document.getElementById("searchInput");
 const sortSelect = document.getElementById("sortSelect");
+const librarySearchInput = document.getElementById("librarySearchInput");
+const librarySortSelect = document.getElementById("librarySortSelect");
 const protectSearchInput = document.getElementById("protectSearchInput");
 const protectSortSelect = document.getElementById("protectSortSelect");
 const filters = document.getElementById("filters");
+const libraryFilters = document.getElementById("libraryFilters");
 const scriptGrid = document.getElementById("scriptGrid");
+const libraryGrid = document.getElementById("libraryGrid");
 const totalScripts = document.getElementById("totalScripts");
 const totalViews = document.getElementById("totalViews");
 const totalUsers = document.getElementById("totalUsers");
@@ -477,6 +602,7 @@ const copyCodeButton = document.getElementById("copyCodeButton");
 const vaultForm = document.getElementById("vaultForm");
 const protectTableBody = document.getElementById("protectTableBody");
 const openUploadButton = document.getElementById("openUploadButton");
+const openUploadButtonHero = document.getElementById("openUploadButtonHero");
 const closeUploadButton = document.getElementById("closeUploadButton");
 const closeUploadX = document.getElementById("closeUploadX");
 const uploadPanel = document.getElementById("uploadPanel");
@@ -513,7 +639,9 @@ async function init() {
   clearLegacyDemoLogin();
   hydrateCachedAuthProfile();
   renderFilters();
-  renderScripts();
+  renderLibraryFilters();
+  renderSearchScripts();
+  renderLibraryScripts();
   renderOverview();
   renderBackendStatus();
   switchProtectView("files");
@@ -568,12 +696,22 @@ function bindEvents() {
 
   searchInput?.addEventListener("input", (event) => {
     state.query = event.target.value.trim().toLowerCase();
-    renderScripts();
+    renderSearchScripts();
   });
 
   sortSelect?.addEventListener("change", (event) => {
     state.sort = event.target.value;
-    renderScripts();
+    renderSearchScripts();
+  });
+
+  librarySearchInput?.addEventListener("input", (event) => {
+    state.libraryQuery = event.target.value.trim().toLowerCase();
+    renderLibraryScripts();
+  });
+
+  librarySortSelect?.addEventListener("change", (event) => {
+    state.librarySort = event.target.value;
+    renderLibraryScripts();
   });
 
   protectSearchInput?.addEventListener("input", (event) => {
@@ -595,6 +733,7 @@ function bindEvents() {
   });
 
   openUploadButton?.addEventListener("click", () => openUploadModal());
+  openUploadButtonHero?.addEventListener("click", () => openUploadModal());
   closeUploadButton?.addEventListener("click", () => closeUploadModal());
   closeUploadX?.addEventListener("click", () => closeUploadModal());
   uploadPanel?.addEventListener("click", (event) => {
@@ -702,13 +841,15 @@ function bindEvents() {
 }
 
 async function hydrateViews() {
-  const counts = await viewStore.fetchCounts(scripts.map((item) => item.id));
-  scripts.forEach((item) => {
+  const allItems = [...libraryScripts, ...searchScripts];
+  const counts = await viewStore.fetchCounts(allItems.map((item) => item.id));
+  allItems.forEach((item) => {
     item.views = counts[item.id] ?? item.views;
     item.popularity = item.views;
   });
   state.viewsHydrated = true;
-  renderScripts();
+  renderSearchScripts();
+  renderLibraryScripts();
   renderOverview();
   renderBackendStatus();
 }
@@ -734,7 +875,9 @@ function setLanguage(lang, persist = true) {
   });
 
   renderFilters();
-  renderScripts();
+  renderLibraryFilters();
+  renderSearchScripts();
+  renderLibraryScripts();
   renderOverview();
   renderBackendStatus();
   renderProtectTable();
@@ -748,6 +891,7 @@ function updateTitle() {
 
   const key = {
     overview: "overviewHeading",
+    search: "searchHeading",
     library: "libraryHeading",
     protect: "protectHeading",
     lifetime: "lifetimeHeading"
@@ -1017,16 +1161,22 @@ function setSidebarUser(name, avatarUrl = "") {
 
 function renderFilters() {
   if (filters) {
-    filters.innerHTML = `<span class="chip">${t("allChip")}</span>`;
+    filters.innerHTML = `<span class="chip">${t("allChip")}</span><span class="chip">External Hub</span>`;
   }
 }
 
-function renderScripts() {
+function renderLibraryFilters() {
+  if (libraryFilters) {
+    libraryFilters.innerHTML = `<span class="chip">${t("allChip")}</span><span class="chip">NNVN Hub</span><span class="chip">Official</span>`;
+  }
+}
+
+function renderSearchScripts() {
   if (!scriptGrid) {
     return;
   }
 
-  const filtered = scripts
+  const filtered = searchScripts
     .filter((item) => {
       const text = `${item.title} ${getText(item.description)} ${item.tags.join(" ")}`.toLowerCase();
       return !state.query || text.includes(state.query);
@@ -1073,6 +1223,58 @@ function renderScripts() {
   });
 }
 
+function renderLibraryScripts() {
+  if (!libraryGrid) {
+    return;
+  }
+
+  const filtered = libraryScripts
+    .filter((item) => {
+      const text = `${item.title} ${getText(item.description)} ${item.tags.join(" ")}`.toLowerCase();
+      return !state.libraryQuery || text.includes(state.libraryQuery);
+    })
+    .sort((left, right) => {
+      if (state.librarySort === "oldest") {
+        return new Date(left.createdAt) - new Date(right.createdAt);
+      }
+      if (state.librarySort === "popular") {
+        return right.views - left.views;
+      }
+      return new Date(right.createdAt) - new Date(left.createdAt);
+    });
+
+  libraryGrid.innerHTML = "";
+
+  if (!filtered.length) {
+    libraryGrid.innerHTML = `<div class="result-box"><p>${t("noMatch")}</p></div>`;
+    return;
+  }
+
+  filtered.forEach((item) => {
+    const article = document.createElement("article");
+    article.className = "script-card";
+    article.innerHTML = `
+      <img class="thumb" src="${item.image}" alt="${escapeHtml(item.title)}">
+      <div class="card-body">
+        <div class="card-topline">
+          <span>${formatDate(item.createdAt)}</span>
+          <span class="views-pill">${formatNumber(item.views)} ${t("viewsLabel")}</span>
+        </div>
+        <h3 class="script-title">${escapeHtml(item.title)}</h3>
+        <p class="section-copy">${escapeHtml(getText(item.description))}</p>
+        <div class="card-bottom">
+          <span>${escapeHtml(item.tags.join(" • "))}</span>
+          <span>${t("uploadedLabel")} ${formatDate(item.createdAt)}</span>
+        </div>
+      </div>
+    `;
+    article.addEventListener("click", () => {
+      openModal(item);
+    });
+    libraryGrid.appendChild(article);
+  });
+}
+
 async function incrementView(item) {
   const previous = item.views;
   const updated = await viewStore.bump(item.id);
@@ -1081,16 +1283,17 @@ async function incrementView(item) {
   if (updated > previous) {
     state.siteMetrics.totalViews += updated - previous;
   }
-  renderScripts();
+  renderSearchScripts();
+  renderLibraryScripts();
   renderOverview();
 }
 
 function renderOverview() {
   if (totalScripts) {
-    totalScripts.textContent = String(scripts.length);
+    totalScripts.textContent = String(libraryScripts.length);
   }
   if (totalViews) {
-    const fallbackViews = scripts.reduce((sum, item) => sum + item.views, 0);
+    const fallbackViews = libraryScripts.reduce((sum, item) => sum + item.views, 0);
     totalViews.textContent = formatNumber(state.siteMetrics.totalViews || fallbackViews);
   }
   if (totalUsers) {
@@ -1100,7 +1303,7 @@ function renderOverview() {
     onlineUsers.textContent = formatNumber(state.siteMetrics.onlineUsers || 0);
   }
   if (popularScript) {
-    const top = scripts.slice().sort((a, b) => b.views - a.views)[0];
+    const top = libraryScripts.slice().sort((a, b) => b.views - a.views)[0];
     popularScript.textContent = top ? top.title : "-";
     if (popularScriptImage) {
       popularScriptImage.hidden = !top;
@@ -1595,7 +1798,7 @@ function createSiteStore() {
     async fetchSiteMetrics() {
       if (!enabled) {
         return {
-          totalViews: scripts.reduce((sum, item) => sum + item.views, 0),
+          totalViews: libraryScripts.reduce((sum, item) => sum + item.views, 0),
           totalUsers: 1,
           onlineUsers: 1
         };
