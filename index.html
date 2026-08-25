@@ -6,7 +6,7 @@
   <title>NNVN Hub</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -121,29 +121,75 @@
           <button class="button button-primary" type="button" data-tab-target="protect" data-i18n="uploadScript">Upload Script</button>
         </div>
 
-        <div class="glass hub-hero">
+        <div class="glass hub-hero liquid-glass-panel hub-hero-shell">
           <div class="hub-hero-copy">
-            <p class="eyebrow">SCRIPT HUB</p>
+            <div class="hero-badges">
+              <span class="hero-badge">SCRIPT HUB</span>
+              <span class="hero-badge hero-badge-soft">External Search</span>
+            </div>
             <h3 data-i18n="hubHeroTitle">Fast search, clean previews, and one place for every published script.</h3>
             <p class="section-copy" data-i18n="hubHeroCopy">Inspired by the Script Hub flow from the reference website, but rebuilt around your own cards, backend, and protected script flow.</p>
+            <div class="hero-actions">
+              <button class="button button-primary" type="button" data-tab-target="search">Open Search Script</button>
+              <button class="button button-secondary liquid-glass-button" type="button" data-tab-target="protect">Open Lua Protect</button>
+            </div>
+            <div class="hero-metrics">
+              <article class="hero-metric-card">
+                <span class="hero-metric-label">Browse Style</span>
+                <strong>Inspired Hub Layout</strong>
+              </article>
+              <article class="hero-metric-card">
+                <span class="hero-metric-label">Preview Flow</span>
+                <strong>Image, tags, and modal view</strong>
+              </article>
+              <article class="hero-metric-card">
+                <span class="hero-metric-label">Search Role</span>
+                <strong>Separate from your own library</strong>
+              </article>
+            </div>
           </div>
-          <div class="hub-hero-grid">
-            <article class="hub-mini-card">
+          <div class="hub-hero-grid hub-hero-preview">
+            <article class="hub-mini-card hub-feature-card">
               <span class="hub-mini-label">Search</span>
               <strong>Instant game lookup</strong>
+              <p>Use the top filter bar like a hub browser, then open any card for a quick preview.</p>
             </article>
-            <article class="hub-mini-card">
+            <article class="hub-mini-card hub-feature-card">
               <span class="hub-mini-label">Preview</span>
-              <strong>Image + loadstring modal</strong>
+              <strong>Image + modal details</strong>
+              <p>Keep browsing clean while each script still opens with cover art and extra information.</p>
             </article>
-            <article class="hub-mini-card">
-              <span class="hub-mini-label">Hub</span>
-              <strong>Sorted by newest or popular</strong>
+            <article class="hub-mini-card hub-feature-card">
+              <span class="hub-mini-label">Separation</span>
+              <strong>External-style area only</strong>
+              <p>Search Script stays independent from your official `Script Library` collection.</p>
             </article>
+            <div class="hub-signal-panel">
+              <div class="hub-signal-head">
+                <span class="signal-dot"></span>
+                <strong>Hub Feed</strong>
+              </div>
+              <div class="hub-signal-list">
+                <span>Search Script is for outside-style discovery.</span>
+                <span>Script Library remains your own official entries.</span>
+                <span>Lua Protect keeps the upload and protected delivery flow.</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="glass toolbar-panel">
+        <div class="glass toolbar-panel liquid-glass-panel hub-toolbar-shell">
+          <div class="toolbar-intro">
+            <div>
+              <span class="toolbar-kicker">Search Console</span>
+              <p>Find a game fast, sort the board, then open cards like a modern script hub.</p>
+            </div>
+            <div class="toolbar-pills">
+              <span class="toolbar-pill">Cards</span>
+              <span class="toolbar-pill">Preview</span>
+              <span class="toolbar-pill">Newest / Popular</span>
+            </div>
+          </div>
           <div class="toolbar-row">
             <label class="search-field">
               <span data-i18n="searchLabel">Tìm kiếm</span>
@@ -241,36 +287,80 @@
           <button class="button button-primary" type="button" id="openUploadButton" data-i18n="uploadScript">Upload Script</button>
         </div>
 
-        <div class="protect-showcase">
-          <article class="glass protect-hero-card">
-            <p class="eyebrow">LUA PROTECT</p>
+        <div class="protect-showcase protect-hero-shell">
+          <article class="glass protect-hero-card liquid-glass-panel">
+            <div class="hero-badges">
+              <span class="hero-badge">LUA PROTECT</span>
+              <span class="hero-badge hero-badge-soft">Gateway</span>
+            </div>
             <h3 data-i18n="protectHeroTitle">Protect, host, and manage your Luau files from one clean gateway.</h3>
             <p class="section-copy" data-i18n="protectHeroCopy">This area is styled from the reference website's protection section, but remains connected to your own protected pages, Discord login, and saved file list.</p>
+            <div class="protect-status-strip">
+              <span class="status-pill">Protected Pages</span>
+              <span class="status-pill">Upload + Paste</span>
+              <span class="status-pill">Discord Login</span>
+            </div>
             <div class="hero-actions">
               <button class="button button-primary" type="button" id="openUploadButtonHero" data-i18n="uploadScript">Upload Script</button>
-              <a class="button button-secondary" href="protected.html" data-i18n="previewProtect">View protect page</a>
+              <a class="button button-secondary liquid-glass-button" href="protected.html" data-i18n="previewProtect">View protect page</a>
+            </div>
+            <div class="protect-steps">
+              <article class="protect-step-card">
+                <span>01</span>
+                <strong>Upload or paste your Luau file</strong>
+              </article>
+              <article class="protect-step-card">
+                <span>02</span>
+                <strong>Create a protected delivery page</strong>
+              </article>
+              <article class="protect-step-card">
+                <span>03</span>
+                <strong>Share the protected link only</strong>
+              </article>
             </div>
           </article>
-          <div class="protect-feature-grid">
-            <article class="glass protect-feature-card">
+          <div class="protect-feature-grid protect-side-stack">
+            <article class="glass protect-feature-card liquid-glass-panel">
               <span class="protect-feature-icon">◈</span>
               <h4 data-i18n="protectFeatureOneTitle">Gateway Control</h4>
               <p data-i18n="protectFeatureOneCopy">Keep every protected entry in one dashboard with edit, delete, and quick protected-link copy.</p>
             </article>
-            <article class="glass protect-feature-card">
+            <article class="glass protect-feature-card liquid-glass-panel">
               <span class="protect-feature-icon">⌁</span>
               <h4 data-i18n="protectFeatureTwoTitle">Lua Upload Flow</h4>
               <p data-i18n="protectFeatureTwoCopy">Paste code or upload files, validate quickly, and save them locally or through Supabase.</p>
             </article>
-            <article class="glass protect-feature-card">
+            <article class="glass protect-feature-card liquid-glass-panel">
               <span class="protect-feature-icon">✦</span>
               <h4 data-i18n="protectFeatureThreeTitle">Protected Delivery</h4>
               <p data-i18n="protectFeatureThreeCopy">Each script can generate its own protected page, ready to share without exposing the whole dashboard.</p>
             </article>
+            <article class="glass protect-console-card liquid-glass-panel">
+              <div class="protect-console-head">
+                <span class="signal-dot"></span>
+                <strong>Gateway Notes</strong>
+              </div>
+              <div class="protect-console-lines">
+                <span>Use Discord login to sync your own saved protected scripts.</span>
+                <span>Open analytics to inspect protected link activity inside this website.</span>
+                <span>Protected entries stay manageable from the same control center.</span>
+              </div>
+            </article>
           </div>
         </div>
 
-        <div class="glass protect-files-panel">
+        <div class="glass protect-files-panel liquid-glass-panel protect-command-center">
+          <div class="protect-panel-topline">
+            <div>
+              <span class="toolbar-kicker">Protection Console</span>
+              <p>Manage files, analytics, and protected links from one dashboard-style gateway.</p>
+            </div>
+            <div class="toolbar-pills">
+              <span class="toolbar-pill">Files</span>
+              <span class="toolbar-pill">Analytics</span>
+              <span class="toolbar-pill">Protected Delivery</span>
+            </div>
+          </div>
           <div class="protect-toolbar">
             <div class="mode-tabs compact-tabs">
               <button class="mode-tab active" type="button" data-protect-view="files">
